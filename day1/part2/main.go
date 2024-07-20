@@ -10,7 +10,6 @@ import (
 )
 
 var mp = map[string]string{
-	"zero":  "0",
 	"one":   "1",
 	"two":   "2",
 	"three": "3",
@@ -54,21 +53,22 @@ func sumOfAllCalibrationValues() int {
 		totalInString := ""
 		firstStrInt := findFirstStrInt(line, n)
 		lastStrInt := findLastStrInt(line, n)
-		totalInString += firstStrInt + lastStrInt
+		totalInString = firstStrInt + lastStrInt
 
 		i, err := strconv.Atoi(totalInString)
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 		}
-		total += i
-	}
 
+		total += i
+
+	}
 	return total
 }
 
 func findFirstStrInt(line string, n int) string {
 	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
+		for j := i; j < n; j++ {
 			ch := rune(line[i])
 			curr := line[i : j+1]
 			if _, ok := mp[curr]; ok {
@@ -84,7 +84,7 @@ func findFirstStrInt(line string, n int) string {
 
 func findLastStrInt(line string, n int) string {
 	for i := n - 1; i >= 0; i-- {
-		for j := i - 1; j >= 0; j-- {
+		for j := i; j >= 0; j-- {
 			ch := rune(line[i])
 			curr := line[j : i+1]
 			if _, ok := mp[curr]; ok {
