@@ -27,8 +27,10 @@ var configurationMap = map[string]int{
 }
 
 func main() {
-	possibleGames := findPossibleGameIds()
-	fmt.Println(possibleGames)
+	idsOfPossibleGames := findPossibleGameIds()
+	fmt.Printf("possible games: %v\n", idsOfPossibleGames)
+	totalSumOfIds := findTotalSumOfIds(idsOfPossibleGames)
+	fmt.Println(totalSumOfIds)
 }
 
 func findPossibleGameIds() []int {
@@ -40,59 +42,94 @@ func findPossibleGameIds() []int {
 
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
+	lineNum := 0
 
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
+		lineNum++
 		n := len(currLine)
 
-		currGameId := string(currLine[5])
-
+		currGameId := lineNum
 		currMap := make(map[string]int)
 		foundSet := false
-		for i := 8; i < n; i++ {
-			if unicode.IsNumber(rune(currLine[i])) {
-				currNum, err := strconv.Atoi(string(currLine[i]))
-				if err != nil {
-					log.Fatal(err)
+		isCurrLineValid := true
+
+		fmt.Printf("Curr Game ID : %v\n", currGameId)
+		for i := 0; i < n; i++ {
+			if string(currLine[i]) != ":" {
+				continue
+			}
+
+			if !unicode.IsNumber(rune(currLine[i])) {
+				continue
+			}
+
+			k := i + 1
+			for string(currLine[k]) != " " {
+				k++
+			}
+
+			currNum, err := strconv.Atoi(currLine[i:k])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for j := i + 2; j < n; j++ {
+				if string(currLine[j]) == "," {
+					currColor := currLine[i+2 : j]
+					currMap[currColor] = currNum
+					i = j + 1
+					break
 				}
-				for j := i + 2; j < n; j++ {
-					if string(currLine[j]) == "," {
-						currColor := currLine[i+2 : j]
-						currMap[currColor] = currNum
-						i = j + 2
-						break
-					}
-					if string(currLine[j]) == ";" {
-						currColor := currLine[i+2 : j]
-						currMap[currColor] = currNum
-						i = j + 2
-						foundSet = true
-						break
-					}
+				if string(currLine[j]) == ";" {
+					currColor := currLine[i+2 : j]
+					currMap[currColor] = currNum
+					i = j + 1
+					foundSet = true
+					break
+				}
+				if j == n-1 {
+					currColor := currLine[i+2 : j+1]
+					currMap[currColor] = currNum
+					i = j + 1
+					foundSet = true
+					break
 				}
 
 			}
+			if foundSet {
+				foundSet = false
+				// check if the set is valid
+				for k, v := range currMap {
+					if v > configurationMap[k] {
+						isCurrLineValid = false
+						fmt.Println("Set not valid")
+						break
+					}
+				}
+				clear(currMap)
+			}
+
+			if !isCurrLineValid {
+				break
+			}
 		}
 
-		i, err := strconv.Atoi(currGameId)
-		if err != nil {
-			log.Fatal(err)
+		if isCurrLineValid {
+			ids = append(ids, lineNum)
 		}
-		ids = append(ids, i)
-
-		// for i := 0; i < n; i++ {
-		// 	if rune(currLine[i]) == ':' {
-		// 		currLineNum := string(currLine[i-1])
-		// 		i, err := strconv.Atoi(currLineNum)
-		// 		if err != nil {
-		// 			log.Fatal(err)
-		// 		}
-		// 		ids = append(ids, i)
-		// 		break
-		// 	}
-		// }
 
 	}
 
 	return ids
+}
+
+func findTotalSumOfIds(ids []int) int {
+	curr := 0
+
+	for _, i := range ids {
+		curr += i
+	}
+
+	return curr
 }
