@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"unicode"
 )
 
@@ -31,6 +32,7 @@ func main() {
 }
 
 func findPossibleGameIds() []int {
+	ids := []int{}
 	readFile, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -42,12 +44,55 @@ func findPossibleGameIds() []int {
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
-		currMap := make(map[string]int)
 
-		for i := 0; i < n; i++ {
-			if unicode.IsSymbol(rune(currLine[i])) {
+		currGameId := string(currLine[5])
+
+		currMap := make(map[string]int)
+		foundSet := false
+		for i := 8; i < n; i++ {
+			if unicode.IsNumber(rune(currLine[i])) {
+				currNum, err := strconv.Atoi(string(currLine[i]))
+				if err != nil {
+					log.Fatal(err)
+				}
+				for j := i + 2; j < n; j++ {
+					if string(currLine[j]) == "," {
+						currColor := currLine[i+2 : j]
+						currMap[currColor] = currNum
+						i = j + 2
+						break
+					}
+					if string(currLine[j]) == ";" {
+						currColor := currLine[i+2 : j]
+						currMap[currColor] = currNum
+						i = j + 2
+						foundSet = true
+						break
+					}
+				}
+
 			}
 		}
 
+		i, err := strconv.Atoi(currGameId)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ids = append(ids, i)
+
+		// for i := 0; i < n; i++ {
+		// 	if rune(currLine[i]) == ':' {
+		// 		currLineNum := string(currLine[i-1])
+		// 		i, err := strconv.Atoi(currLineNum)
+		// 		if err != nil {
+		// 			log.Fatal(err)
+		// 		}
+		// 		ids = append(ids, i)
+		// 		break
+		// 	}
+		// }
+
 	}
+
+	return ids
 }
