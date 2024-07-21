@@ -27,7 +27,7 @@ var configurationMap = map[string]int{
 
 func main() {
 	idsOfPossibleGames := findPossibleGameIds()
-	fmt.Printf("possible games: %v\n", idsOfPossibleGames)
+	fmt.Printf("Possible Games: %v\n", idsOfPossibleGames)
 	totalSumOfIds := findTotalSumOfIds(idsOfPossibleGames)
 	fmt.Println(totalSumOfIds)
 }
@@ -45,17 +45,13 @@ func findPossibleGameIds() []int {
 
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
-		fmt.Printf("curr line: %v\n", currLine)
+		fmt.Printf("Curr Line: %v\n", currLine)
 		lineNum++
 		n := len(currLine)
 
-		currGameId := lineNum
 		currMap := make(map[string]int)
 		foundSet := false
 		isCurrLineValid := true
-
-		fmt.Printf("value of n: %v\n", n)
-		fmt.Printf("curr Game ID : %v\n", currGameId)
 
 		idxOfFirstNum := 0
 		for i := 0; i < n; i++ {
@@ -71,74 +67,48 @@ func findPossibleGameIds() []int {
 				k++
 			}
 
-			fmt.Printf("curr unicode - i: %v\n", currLine[i:k])
 			currNum, err := strconv.Atoi(currLine[i:k])
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			// fmt.Printf("curr unicode - i: %v\n", string(currLine[i]))
-			// currNum, err := strconv.Atoi(string(currLine[i]))
-			// if err != nil {
-			// 	log.Fatal(err)
-			// }
 			for j := k + 1; j < n; j++ {
 				if string(currLine[j]) == "," {
-					fmt.Println("grabbing word")
 					currColor := currLine[k+1 : j]
 					currMap[currColor] = currNum
-					fmt.Printf("Curr color: %v\n", currColor)
 					i = j + 1
-
-					fmt.Printf("curr map: %v\n", currMap)
 					break
 				}
 				if string(currLine[j]) == ";" {
-					fmt.Println("found ;")
-					fmt.Println("grabbing word")
 					currColor := currLine[k+1 : j]
-					fmt.Printf("Curr color: %v\n", currColor)
 					currMap[currColor] = currNum
 					i = j + 1
-
-					fmt.Printf("curr map: %v\n", currMap)
 					foundSet = true
 					break
 				}
 				if j == n-1 {
-					fmt.Println("found ;")
-					fmt.Println("grabbing word")
 					currColor := currLine[k+1 : j+1]
-					fmt.Printf("Curr color: %v\n", currColor)
 					currMap[currColor] = currNum
 					i = j + 1
-
-					fmt.Printf("curr map: %v\n", currMap)
 					foundSet = true
 					break
 				}
-
 			}
 			if foundSet {
 				foundSet = false
-				setValid := true
-				fmt.Println("checking set validity")
+				setIsValid := true
 				// check if the set is valid
-				fmt.Printf("config map: %v\n", configurationMap)
 				for k, v := range currMap {
 					if v > configurationMap[k] {
 						isCurrLineValid = false
-						setValid = false
-						fmt.Println("set not valid")
-						fmt.Printf("value found: %v\n", v)
+						setIsValid = false
+						fmt.Println("Set is not valid")
 						break
 					}
 				}
 
-				if setValid {
+				if setIsValid {
 					clear(currMap)
-					fmt.Println("set valid")
-					fmt.Printf("cleared curr map: %v\n", currMap)
 				}
 			}
 
@@ -149,11 +119,7 @@ func findPossibleGameIds() []int {
 
 		if isCurrLineValid {
 			ids = append(ids, lineNum)
-			fmt.Println("Line valid")
-			fmt.Println("found correct line")
-			fmt.Println(ids)
 		}
-
 	}
 
 	return ids
@@ -161,10 +127,8 @@ func findPossibleGameIds() []int {
 
 func findTotalSumOfIds(ids []int) int {
 	curr := 0
-
 	for _, i := range ids {
 		curr += i
 	}
-
 	return curr
 }
