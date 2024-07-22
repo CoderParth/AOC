@@ -23,12 +23,6 @@ import (
 // For each game, find the minimum set of cubes that must have been present.
 // What is the sum of the power of these sets?
 
-var configurationMap = map[string]int{
-	"red":   12,
-	"green": 13,
-	"blue":  14,
-}
-
 func main() {
 	listOfPowerPerLine := findPowerPerLine()
 	fmt.Printf("Power Per line: %v\n", listOfPowerPerLine)
