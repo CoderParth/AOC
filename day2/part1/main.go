@@ -41,88 +41,91 @@ func findPossibleGameIds() []int {
 
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
-	lineNum := 0
+	lineNum := 1
 
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		fmt.Printf("Curr Line: %v\n", currLine)
-		lineNum++
-		n := len(currLine)
-
-		currMap := make(map[string]int)
-		foundSet := false
-		isCurrLineValid := true
-
-		idxOfFirstNum := 0
-		for i := 0; i < n; i++ {
-			if string(currLine[i]) != ":" {
-				continue
-			}
-			idxOfFirstNum = i + 2
-		}
-
-		for i := idxOfFirstNum; i < n; i++ {
-			k := i + 1
-			for string(currLine[k]) != " " {
-				k++
-			}
-
-			currNum, err := strconv.Atoi(currLine[i:k])
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for j := k + 1; j < n; j++ {
-				if string(currLine[j]) == "," {
-					currColor := currLine[k+1 : j]
-					currMap[currColor] = currNum
-					i = j + 1
-					break
-				}
-				if string(currLine[j]) == ";" {
-					currColor := currLine[k+1 : j]
-					currMap[currColor] = currNum
-					i = j + 1
-					foundSet = true
-					break
-				}
-				if j == n-1 {
-					currColor := currLine[k+1 : j+1]
-					currMap[currColor] = currNum
-					i = j + 1
-					foundSet = true
-					break
-				}
-			}
-			if foundSet {
-				foundSet = false
-				setIsValid := true
-				// check if the set is valid
-				for k, v := range currMap {
-					if v > configurationMap[k] {
-						isCurrLineValid = false
-						setIsValid = false
-						fmt.Println("Set is not valid")
-						break
-					}
-				}
-
-				if setIsValid {
-					clear(currMap)
-				}
-			}
-
-			if !isCurrLineValid {
-				break
-			}
-		}
-
+		isCurrLineValid := checkCurrLineValidity(currLine)
 		if isCurrLineValid {
 			ids = append(ids, lineNum)
 		}
+		lineNum++
 	}
-
 	return ids
+}
+
+func checkCurrLineValidity(currLine string) bool {
+	n := len(currLine)
+	currMap := make(map[string]int)
+	idxOfFirstNumOfALine := getIdxOfFirstNumOfALine(currLine, n)
+
+	for i := idxOfFirstNumOfALine; i < n; i++ {
+		currNum, k := getCurrNumAndIdxBeforeCurrColor(currLine, i)
+		for j := k + 1; j < n; j++ {
+			if string(currLine[j]) == "," {
+				currColor := currLine[k+1 : j]
+				currMap[currColor] = currNum
+				i = j + 1
+				break // break through the loop and analyse other colors of the same set
+			}
+			if string(currLine[j]) == ";" {
+				currColor := currLine[k+1 : j]
+				currMap[currColor] = currNum
+				i = j + 1
+				isSetValid := checkSetValidity(currMap)
+				if !isSetValid {
+					return false
+				}
+				clear(currMap)
+				break // break through the loop and analyse other sets
+			}
+			if j == n-1 {
+				currColor := currLine[k+1 : j+1]
+				currMap[currColor] = currNum
+				i = j + 1
+				isSetValid := checkSetValidity(currMap)
+				if !isSetValid {
+					return false
+				}
+				clear(currMap)
+				break // break through the loop and analyse other sets
+			}
+		}
+	}
+	return true
+}
+
+func getIdxOfFirstNumOfALine(line string, n int) int {
+	for i := 0; i < n; i++ {
+		if string(line[i]) != ":" {
+			continue
+		}
+		return i + 2
+	}
+	return 0
+}
+
+func getCurrNumAndIdxBeforeCurrColor(currLine string, i int) (int, int) {
+	k := i + 1
+	for string(currLine[k]) != " " {
+		k++
+	}
+	currNum, err := strconv.Atoi(currLine[i:k])
+	if err != nil {
+		log.Fatal(err)
+	}
+	return currNum, k
+}
+
+func checkSetValidity(currMap map[string]int) bool {
+	for k, v := range currMap {
+		if v > configurationMap[k] {
+			fmt.Println("Set is not valid")
+			return false
+		}
+	}
+	return true
 }
 
 func findTotalSumOfIds(ids []int) int {
