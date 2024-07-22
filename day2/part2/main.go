@@ -89,10 +89,7 @@ func checkPowerForCurrLine(currLine string) int {
 
 func calculatePowerOfALine(mp map[string]int) int {
 	total := 1
-	fmt.Println("calculating power of a line ")
-	for k, v := range mp {
-		fmt.Printf("k: %v\n", k)
-		fmt.Printf("v: %v\n", v)
+	for _, v := range mp {
 		total *= v
 	}
 	return total
