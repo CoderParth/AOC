@@ -28,6 +28,33 @@ import (
 // Of course, the actual engine schematic is much larger.
 // What is the sum of all of the part numbers in the engine schematic?
 
+var mpOfSymbols = map[string]int{
+	"*":  0,
+	"#":  0,
+	"+":  0,
+	"$":  0,
+	"~":  0,
+	"!":  0,
+	"@":  0,
+	"%":  0,
+	"^":  0,
+	"&":  0,
+	"(":  0,
+	")":  0,
+	"_":  0,
+	"`":  0,
+	"-":  0,
+	"=":  0,
+	"{":  0,
+	"}":  0,
+	"|":  0,
+	"[":  0,
+	"]":  0,
+	"\\": 0,
+	":":  0,
+	"\"": 0,
+}
+
 func main() {
 	allPartNums := findPartNums()
 	fmt.Printf("Part Nums: %v\n", allPartNums)
@@ -83,7 +110,6 @@ func findPartNums() []int {
 
 	partNums := checkForPartNumsInMatrix(matrix)
 	return partNums
-	// return []int{}
 }
 
 func checkForPartNumsInMatrix(matrix [][]string) []int {
@@ -97,9 +123,14 @@ func checkForPartNumsInMatrix(matrix [][]string) []int {
 			idxOfCurrNum := []int{}
 			for k := j; k < n; k++ {
 				if _, err := strconv.Atoi(matrix[i][k]); err != nil {
+					j = k
 					break
 				}
 				idxOfCurrNum = append(idxOfCurrNum, k)
+			}
+
+			if len(idxOfCurrNum) == 0 {
+				continue
 			}
 
 			currNumInStr := ""
@@ -117,19 +148,65 @@ func checkForPartNumsInMatrix(matrix [][]string) []int {
 			fmt.Printf("curr num is: %v \n", currNum)
 
 			// search around each index
-			isPartNum := true
+			isPartNum := false
 			for _, idx := range idxOfCurrNum {
-        if i > 0 {
-          // check if top, topleft diagonal, or topright diaognal has a symbol 
-          if matrix[i-1][idx]  == {
-
-          } 
-
-        }
+				if i > 0 {
+					// check if top, topleft diagonal, or topright diaognal has a symbol
+					if _, ok := mpOfSymbols[matrix[i-1][idx]]; ok {
+						isPartNum = true
+						break
+					}
+					if idx > 0 {
+						if _, ok := mpOfSymbols[matrix[i-1][idx-1]]; ok {
+							isPartNum = true
+							break
+						}
+					}
+					if idx < n-1 {
+						if _, ok := mpOfSymbols[matrix[i-1][idx+1]]; ok {
+							isPartNum = true
+							break
+						}
+					}
+				}
+				// check if a symbol is present either on the left or on the right
+				if idx > 0 {
+					if _, ok := mpOfSymbols[matrix[i][idx-1]]; ok {
+						isPartNum = true
+						break
+					}
+				}
+				if idx < n-1 {
+					if _, ok := mpOfSymbols[matrix[i][idx+1]]; ok {
+						isPartNum = true
+						break
+					}
+				}
+				// check if a symbol is present at either bottomleft diagonal, bottomright diagonal
+				// or at bottom
+				if i < n-1 {
+					if idx > 0 {
+						if _, ok := mpOfSymbols[matrix[i+1][idx-1]]; ok {
+							isPartNum = true
+							break
+						}
+					}
+					if idx < n-1 {
+						if _, ok := mpOfSymbols[matrix[i+1][idx+1]]; ok {
+							isPartNum = true
+							break
+						}
+					}
+					if _, ok := mpOfSymbols[matrix[i+1][idx]]; ok {
+						isPartNum = true
+						break
+					}
+				}
 			}
 
-			partNums = append(partNums, currNum)
-
+			if isPartNum {
+				partNums = append(partNums, currNum)
+			}
 		}
 	}
 
