@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"unicode"
 )
 
 // 467..114..
@@ -56,11 +55,10 @@ func findPartNums() []int {
 	for fileScanner.Scan() {
 		totalLines++
 	}
-	fmt.Printf("total lines: %v \n", totalLines)
 
-	matrix := make([][]rune, totalLines)
+	matrix := make([][]string, totalLines)
 	for i := 0; i < totalLines; i++ {
-		matrix[i] = make([]rune, n)
+		matrix[i] = make([]string, n)
 	}
 
 	// create filescanner again
@@ -75,15 +73,11 @@ func findPartNums() []int {
 	currLineNum := 0
 	for fileScannerSecond.Scan() {
 		currLine := fileScannerSecond.Text()
-		fmt.Printf("Curr Line: %v \n", currLine)
-
 		for i := 0; i < n; i++ {
 			currCharacter := currLine[i]
-			if string(currCharacter) != " " {
-				matrix[currLineNum] = append(matrix[currLineNum], rune(currCharacter))
-			}
+			matrix[currLineNum][i] = string(currCharacter)
+
 		}
-		fmt.Printf("curr matrix: %v \n", string(matrix[currLineNum]))
 		currLineNum++
 	}
 
@@ -92,19 +86,17 @@ func findPartNums() []int {
 	// return []int{}
 }
 
-func checkForPartNumsInMatrix(matrix [][]rune) []int {
+func checkForPartNumsInMatrix(matrix [][]string) []int {
 	partNums := []int{}
 	m, n := len(matrix), len(matrix[0])
 
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
-			k := j
 
-			fmt.Printf("curr matrix: %v \n", string(matrix[i]))
-			fmt.Printf("matrix[i][k]: %v \n", string(matrix[i][k]))
+			fmt.Printf("curr matrix: %v \n", matrix[i])
 			idxOfCurrNum := []int{}
-			for ; k < n; k++ {
-				if unicode.IsSymbol(matrix[i][k]) {
+			for k := j; k < n; k++ {
+				if _, err := strconv.Atoi(matrix[i][k]); err != nil {
 					break
 				}
 				idxOfCurrNum = append(idxOfCurrNum, k)
@@ -125,9 +117,16 @@ func checkForPartNumsInMatrix(matrix [][]rune) []int {
 			fmt.Printf("curr num is: %v \n", currNum)
 
 			// search around each index
-			// for _, idx := range idxOfCurrNum {
-			//
-			// }
+			isPartNum := true
+			for _, idx := range idxOfCurrNum {
+        if i > 0 {
+          // check if top, topleft diagonal, or topright diaognal has a symbol 
+          if matrix[i-1][idx]  == {
+
+          } 
+
+        }
+			}
 
 			partNums = append(partNums, currNum)
 
