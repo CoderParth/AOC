@@ -64,7 +64,6 @@ var mpOfSymbols = map[string]int{
 
 func main() {
 	allPartNums := findPartNums()
-	fmt.Printf("Part Nums: %v\n", allPartNums)
 	totalSumOfPartNums := findTotalSum(allPartNums)
 	fmt.Printf("Total sum of part nums: %v\n", totalSumOfPartNums)
 }
@@ -138,7 +137,6 @@ func checkForPartNumsInMatrix(matrix [][]string) []int {
 	m, n := len(matrix), len(matrix[0])
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
-			fmt.Printf("curr matrix: %v \n", matrix[i])
 			idxOfCurrNum := []int{}
 			for k := j; k < n; k++ {
 				if _, err := strconv.Atoi(matrix[i][k]); err != nil {
@@ -163,37 +161,25 @@ func checkForPartNumsInMatrix(matrix [][]string) []int {
 func checkIfCurrNumIsPartNum(idxOfCurrNum []int, matrix *[][]string, i, n int) bool {
 	for _, idx := range idxOfCurrNum {
 		// check if top, topleft diagonal, or topright diaognal has a symbol
-		if hasSymbolInTopOrTopDiagonals(matrix, i, idx, n) {
+		if hasSymbolAtTopOrTopDiagonals(matrix, i, idx, n) {
 			return true
 		}
 
 		// check if a symbol is present either on the left or on the right
-		if hasSymbolInEitherLeftOrRight(matrix, i, idx, n) {
+		if hasSymbolAtEitherLeftOrRight(matrix, i, idx, n) {
 			return true
 		}
 
 		// check if a symbol is present at either bottomleft diagonal, bottomright diagonal
-		// or at bottom
-		if i < n-1 {
-			if idx > 0 {
-				if _, ok := mpOfSymbols[(*matrix)[i+1][idx-1]]; ok {
-					return true
-				}
-			}
-			if idx < n-1 {
-				if _, ok := mpOfSymbols[(*matrix)[i+1][idx+1]]; ok {
-					return true
-				}
-			}
-			if _, ok := mpOfSymbols[(*matrix)[i+1][idx]]; ok {
-				return true
-			}
+		// or at the bottom
+		if hasSymbolAtBottomOrBottomDiagonals(matrix, i, idx, n) {
+			return true
 		}
 	}
 	return false
 }
 
-func hasSymbolInTopOrTopDiagonals(matrix *[][]string, i, idx, n int) bool {
+func hasSymbolAtTopOrTopDiagonals(matrix *[][]string, i, idx, n int) bool {
 	if i > 0 {
 		if _, ok := mpOfSymbols[(*matrix)[i-1][idx]]; ok {
 			return true
@@ -212,7 +198,7 @@ func hasSymbolInTopOrTopDiagonals(matrix *[][]string, i, idx, n int) bool {
 	return false
 }
 
-func hasSymbolInEitherLeftOrRight(matrix *[][]string, i, idx, n int) bool {
+func hasSymbolAtEitherLeftOrRight(matrix *[][]string, i, idx, n int) bool {
 	if idx > 0 {
 		if _, ok := mpOfSymbols[(*matrix)[i][idx-1]]; ok {
 			return true
@@ -226,20 +212,35 @@ func hasSymbolInEitherLeftOrRight(matrix *[][]string, i, idx, n int) bool {
 	return false
 }
 
+func hasSymbolAtBottomOrBottomDiagonals(matrix *[][]string, i, idx, n int) bool {
+	if i < n-1 {
+		if idx > 0 {
+			if _, ok := mpOfSymbols[(*matrix)[i+1][idx-1]]; ok {
+				return true
+			}
+		}
+		if idx < n-1 {
+			if _, ok := mpOfSymbols[(*matrix)[i+1][idx+1]]; ok {
+				return true
+			}
+		}
+		if _, ok := mpOfSymbols[(*matrix)[i+1][idx]]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 func getCurrNum(idxOfCurrNum []int, matrix *[][]string, i int) int {
 	currNumInStr := ""
 	for _, s := range idxOfCurrNum {
 		valInTheIdx := string((*matrix)[i][s])
-		fmt.Printf("val in the idx: %v \n", valInTheIdx)
 		currNumInStr += valInTheIdx
 	}
-
-	fmt.Printf("curr num in str: %v \n ", currNumInStr)
 	currNum, err := strconv.Atoi(currNumInStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("curr num is: %v \n", currNum)
 	return currNum
 }
 
