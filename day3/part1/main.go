@@ -70,53 +70,67 @@ func main() {
 }
 
 func findPartNums() []int {
+	fileScanner := createFileScanner()
+
+	n := totalLenOfStrInALine(fileScanner)     // total len of string in each line
+	totalLines := totalNumOfLines(fileScanner) // total number of lines  present in input
+	matrix := createMatrix(totalLines, n)
+
+	secondFileScanner := createFileScanner() // create filescanner again for same input file
+	matrix = fillMatrix(secondFileScanner, &matrix, n)
+
+	partNums := checkForPartNumsInMatrix(matrix)
+	return partNums
+}
+
+func createFileScanner() *bufio.Scanner {
 	readFile, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
 
+func totalLenOfStrInALine(fileScanner *bufio.Scanner) int {
 	n := 0
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n = len(currLine)
 		break
 	}
+	return n
+}
 
+func totalNumOfLines(fileScanner *bufio.Scanner) int {
 	totalLines := 1
 	for fileScanner.Scan() {
 		totalLines++
 	}
+	return totalLines
+}
 
+func createMatrix(totalLines, n int) [][]string {
 	matrix := make([][]string, totalLines)
 	for i := 0; i < totalLines; i++ {
 		matrix[i] = make([]string, n)
 	}
+	return matrix
+}
 
-	// create filescanner again
-	readFileSecond, err := os.Open("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fileScannerSecond := bufio.NewScanner(readFileSecond)
-	fileScannerSecond.Split(bufio.ScanLines)
-
+func fillMatrix(secondFileScanner *bufio.Scanner, matrix *[][]string, n int) [][]string {
 	currLineNum := 0
-	for fileScannerSecond.Scan() {
-		currLine := fileScannerSecond.Text()
+	for secondFileScanner.Scan() {
+		currLine := secondFileScanner.Text()
 		for i := 0; i < n; i++ {
 			currCharacter := currLine[i]
-			matrix[currLineNum][i] = string(currCharacter)
+			(*matrix)[currLineNum][i] = string(currCharacter)
 
 		}
 		currLineNum++
 	}
-
-	partNums := checkForPartNumsInMatrix(matrix)
-	return partNums
+	return *matrix
 }
 
 func checkForPartNumsInMatrix(matrix [][]string) []int {
