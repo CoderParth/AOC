@@ -29,19 +29,19 @@ import (
 // What is the sum of all of the part numbers in the engine schematic?
 
 var mpOfSymbols = map[string]int{
-	"*":  0,
-	"#":  0,
-	"+":  0,
-	"$":  0,
 	"~":  0,
 	"!":  0,
 	"@":  0,
+	"#":  0,
+	"$":  0,
 	"%":  0,
 	"^":  0,
 	"&":  0,
+	"*":  0,
 	"(":  0,
 	")":  0,
 	"_":  0,
+	"+":  0,
 	"`":  0,
 	"-":  0,
 	"=":  0,
@@ -53,6 +53,13 @@ var mpOfSymbols = map[string]int{
 	"\\": 0,
 	":":  0,
 	"\"": 0,
+	";":  0,
+	"'":  0,
+	",":  0,
+	"<":  0,
+	">":  0,
+	"/":  0,
+	"?":  0,
 }
 
 func main() {
