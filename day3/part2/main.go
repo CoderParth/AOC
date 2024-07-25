@@ -67,13 +67,32 @@ var mpOfSymbols = map[string]int{
 	"?":  0,
 }
 
-func main() {
-	allPartNums := findPartNums()
-	totalSumOfPartNums := findTotalSum(allPartNums)
-	fmt.Printf("Total sum of part nums: %v\n", totalSumOfPartNums)
+type IdxsOfSymbol struct {
+	First  int
+	Second int
 }
 
-func findPartNums() []int {
+func main() {
+	allPartNums := findPartNums()
+	totalSumOfGearRatios := findTotalSumOfGearRatios(allPartNums)
+	fmt.Printf("Total sum of gear ratios: %v\n", totalSumOfGearRatios)
+}
+
+func findTotalSumOfGearRatios(allPartNums map[IdxsOfSymbol][]int) int {
+	total := 0
+	for _, arr := range allPartNums {
+		currTotal := 1
+		if len(arr) > 1 {
+			for _, num := range arr {
+				currTotal *= num
+			}
+			total += currTotal
+		}
+	}
+	return total
+}
+
+func findPartNums() map[IdxsOfSymbol][]int {
 	fileScanner := createFileScanner()
 
 	n := totalLenOfStrInALine(fileScanner)     // total len of string in each line
@@ -137,13 +156,8 @@ func fillMatrix(secondFileScanner *bufio.Scanner, matrix *[][]string, n int) [][
 	return *matrix
 }
 
-type IdxsOfSymbol struct {
-	First  int
-	Second int
-}
-
-func checkForPartNumsInMatrix(matrix [][]string) map[IdxsOfSymbol]int {
-	partNums := make(map[IdxsOfSymbol]int)
+func checkForPartNumsInMatrix(matrix [][]string) map[IdxsOfSymbol][]int {
+	partNums := make(map[IdxsOfSymbol][]int)
 	m, n := len(matrix), len(matrix[0])
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
@@ -162,8 +176,10 @@ func checkForPartNumsInMatrix(matrix [][]string) map[IdxsOfSymbol]int {
 			isPartNum, idxOfAdjSymbol := checkIfCurrNumIsPartNum(idxOfCurrNum, &matrix, i, n)
 			if isPartNum {
 				first, second := idxOfAdjSymbol[0], idxOfAdjSymbol[1]
-				idxs := IdxsOfSymbol{first, second}
-				partNums[idxs] = currNum
+				if matrix[first][second] == "*" {
+					idxs := IdxsOfSymbol{first, second}
+					partNums[idxs] = append(partNums[idxs], currNum)
+				}
 			}
 		}
 	}
@@ -226,23 +242,23 @@ func hasSymbolAtEitherLeftOrRight(matrix *[][]string, i, idx, n int) (bool, []in
 	return false, []int{}
 }
 
-func hasSymbolAtBottomOrBottomDiagonals(matrix *[][]string, i, idx, n int) bool {
+func hasSymbolAtBottomOrBottomDiagonals(matrix *[][]string, i, idx, n int) (bool, []int) {
 	if i < n-1 {
 		if idx > 0 {
 			if _, ok := mpOfSymbols[(*matrix)[i+1][idx-1]]; ok {
-				return true
+				return true, []int{i + 1, idx - 1}
 			}
 		}
 		if idx < n-1 {
 			if _, ok := mpOfSymbols[(*matrix)[i+1][idx+1]]; ok {
-				return true
+				return true, []int{i + 1, idx + 1}
 			}
 		}
 		if _, ok := mpOfSymbols[(*matrix)[i+1][idx]]; ok {
-			return true
+			return true, []int{i + 1, idx}
 		}
 	}
-	return false
+	return false, []int{}
 }
 
 func getCurrNum(idxOfCurrNum []int, matrix *[][]string, i int) int {
@@ -256,12 +272,4 @@ func getCurrNum(idxOfCurrNum []int, matrix *[][]string, i int) int {
 		log.Fatal(err)
 	}
 	return currNum
-}
-
-func findTotalSum(partNums []int) int {
-	curr := 0
-	for _, p := range partNums {
-		curr += p
-	}
-	return curr
 }
