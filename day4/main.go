@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
 // Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
 // Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
@@ -26,4 +33,80 @@ package main
 //How many points are they worth in total?
 
 func main() {
+	points := calculatePoints()
+	fmt.Printf("Points Array: %v \n", points)
+	totalPoints := sumOfPoints(points)
+	fmt.Printf("points: %v \n", totalPoints)
+}
+
+func calculatePoints() []int {
+	fileScanner := createFileScanner()
+	n := findLenOfStrInALine(fileScanner)
+
+	fileScanner = createFileScanner()
+	pointsPerEachLine := calculatePointsPerEachLine(fileScanner, n)
+	return pointsPerEachLine
+}
+
+func calculatePointsPerEachLine(fileScanner *bufio.Scanner, n int) []int {
+	pointsArray := []int{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		totalWinningNums := findTotalNumOfWinningNums(currLine, n)
+		pointsForThisCard := calculatePointFromWinningNums(totalWinningNums)
+		pointsArray = append(pointsArray, pointsForThisCard)
+	}
+	return pointsArray
+}
+
+func findTotalNumOfWinningNums(currLine string, n int) int {
+	mpOfWinningNums := createMapOfWinningNums(currLine, n)
+	mpOfNumsYouHave := createMapOfNumsYouHave(currLine, n)
+	return findHowManyMatches(mpOfWinningNums, mpOfNumsYouHave)
+}
+
+func findHowManyMatches(mp1, mp2 map[int]int) int {
+	totalMatches := 0
+	for k := range mp2 {
+		if _, ok := mp1[k]; ok {
+			totalMatches++
+		}
+	}
+	return totalMatches
+}
+
+func calculatePointFromWinningNums(lenOfWinningNums int) int {
+	curr := 1
+	for i := 1; i < lenOfWinningNums; i++ {
+		curr *= 2
+	}
+	return curr
+}
+
+func findLenOfStrInALine(fileScanner *bufio.Scanner) int {
+	n := 0
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		n = len(currLine)
+		break
+	}
+	return n
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func sumOfPoints(points []int) int {
+	total := 0
+	for _, p := range points {
+		total += p
+	}
+	return total
 }
