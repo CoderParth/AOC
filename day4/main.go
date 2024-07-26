@@ -80,14 +80,11 @@ func createMapOfWinningNums(currLine string, n int) map[int]int {
 		if string(currLine[j]) == " " {
 			continue
 		}
-		fmt.Printf("j: %v \n", j)
 		currNumInStr := ""
 		k := j
 		for ; string(currLine[j]) != "|" && string(currLine[k]) != " " && k < n; k++ {
-			fmt.Println("running k loop ")
 			currNumInStr += string(currLine[k])
 		}
-		fmt.Printf("curr num: %v \n", currNumInStr)
 		currNum, err := strconv.Atoi(currNumInStr)
 		if err != nil {
 			log.Fatal(err)
@@ -107,19 +104,20 @@ func createMapOfNumsYouHave(currLine string, n int) map[int]int {
 		}
 	}
 
-	j := i + 2
+	j := i
 	for ; j < n; j++ {
-		if string(currLine[j]) == " " {
+		if string(currLine[j]) == " " || string(currLine[j]) == "|" {
 			continue
 		}
-		fmt.Printf("j: %v \n", j)
 		currNumInStr := ""
 		k := j
-		for ; string(currLine[j]) != "|" && string(currLine[k]) != " " && k < n; k++ {
-			fmt.Println("running k loop ")
+		for ; k < n; k++ {
+			if string(currLine[k]) == " " {
+				j = k
+				break
+			}
 			currNumInStr += string(currLine[k])
 		}
-		fmt.Printf("curr num: %v \n", currNumInStr)
 		currNum, err := strconv.Atoi(currNumInStr)
 		if err != nil {
 			log.Fatal(err)
@@ -128,34 +126,6 @@ func createMapOfNumsYouHave(currLine string, n int) map[int]int {
 		j = k
 	}
 	return mp
-
-	// mp := make(map[int]int)
-	// startingIdxForNumsYouHave := 0
-	// for i := 4; i < n; i++ {
-	// 	if string(currLine[i]) == "|" {
-	// 		startingIdxForNumsYouHave = i
-	// 		break
-	// 	}
-	// }
-	//
-	// fmt.Printf("value of i: %v \n", startingIdxForNumsYouHave)
-	//
-	// for i := startingIdxForNumsYouHave + 2; i < n; i++ {
-	// 	for j := i; j < n; j++ {
-	// 		currNumInStr := ""
-	// 		k := j
-	// 		for ; string(currLine[k]) != "" && k < n; k++ {
-	// 			currNumInStr += string(currLine[k])
-	// 		}
-	// 		currNum, err := strconv.Atoi(currNumInStr)
-	// 		if err != nil {
-	// 			log.Fatal(err)
-	// 		}
-	// 		mp[currNum] = 0
-	// 		j = k
-	// 	}
-	// }
-	// return mp
 }
 
 func findHowManyMatches(mp1, mp2 map[int]int) int {
