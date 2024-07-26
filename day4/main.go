@@ -68,56 +68,94 @@ func findTotalNumOfWinningNums(currLine string, n int) int {
 
 func createMapOfWinningNums(currLine string, n int) map[int]int {
 	mp := make(map[int]int)
-	for i := 4; string(currLine[i]) != "|" && i < n; i++ {
-		if string(currLine[i]) != ":" {
+	i := 4
+	for ; i < n; i++ {
+		if string(currLine[i]) == ":" {
+			break
+		}
+	}
+
+	j := i + 2
+	for ; j < n && string(currLine[j]) != "|"; j++ {
+		if string(currLine[j]) == " " {
 			continue
 		}
-		for j := i + 2; string(currLine[j]) != "|" && j < n; j++ {
-			fmt.Printf("j: %v \n", j)
-			currNumInStr := ""
-			k := j
-			for ; string(currLine[k]) != " " && k < n; k++ {
-				fmt.Println("running k loop ")
-				currNumInStr += string(currLine[k])
-			}
-			fmt.Printf("curr num: %v \n", currNumInStr)
-			currNum, err := strconv.Atoi(currNumInStr)
-			if err != nil {
-				log.Fatal(err)
-			}
-			mp[currNum] = 0
-			j = k
+		fmt.Printf("j: %v \n", j)
+		currNumInStr := ""
+		k := j
+		for ; string(currLine[j]) != "|" && string(currLine[k]) != " " && k < n; k++ {
+			fmt.Println("running k loop ")
+			currNumInStr += string(currLine[k])
 		}
+		fmt.Printf("curr num: %v \n", currNumInStr)
+		currNum, err := strconv.Atoi(currNumInStr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		mp[currNum] = 0
+		j = k
 	}
 	return mp
 }
 
 func createMapOfNumsYouHave(currLine string, n int) map[int]int {
 	mp := make(map[int]int)
-	startingIdxForNumsYouHave := 0
-	for i := 4; i < n; i++ {
+	i := 4
+	for ; i < n; i++ {
 		if string(currLine[i]) == "|" {
-			startingIdxForNumsYouHave = i
 			break
 		}
 	}
 
-	for i := startingIdxForNumsYouHave + 1; i < n; i++ {
-		for j := i + 2; j < n; j++ {
-			currNumInStr := ""
-			k := j
-			for ; string(currLine[k]) != "" && k < n; k++ {
-				currNumInStr += string(currLine[k])
-			}
-			currNum, err := strconv.Atoi(currNumInStr)
-			if err != nil {
-				log.Fatal(err)
-			}
-			mp[currNum] = 0
-			j = k
+	j := i + 2
+	for ; j < n; j++ {
+		if string(currLine[j]) == " " {
+			continue
 		}
+		fmt.Printf("j: %v \n", j)
+		currNumInStr := ""
+		k := j
+		for ; string(currLine[j]) != "|" && string(currLine[k]) != " " && k < n; k++ {
+			fmt.Println("running k loop ")
+			currNumInStr += string(currLine[k])
+		}
+		fmt.Printf("curr num: %v \n", currNumInStr)
+		currNum, err := strconv.Atoi(currNumInStr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		mp[currNum] = 0
+		j = k
 	}
 	return mp
+
+	// mp := make(map[int]int)
+	// startingIdxForNumsYouHave := 0
+	// for i := 4; i < n; i++ {
+	// 	if string(currLine[i]) == "|" {
+	// 		startingIdxForNumsYouHave = i
+	// 		break
+	// 	}
+	// }
+	//
+	// fmt.Printf("value of i: %v \n", startingIdxForNumsYouHave)
+	//
+	// for i := startingIdxForNumsYouHave + 2; i < n; i++ {
+	// 	for j := i; j < n; j++ {
+	// 		currNumInStr := ""
+	// 		k := j
+	// 		for ; string(currLine[k]) != "" && k < n; k++ {
+	// 			currNumInStr += string(currLine[k])
+	// 		}
+	// 		currNum, err := strconv.Atoi(currNumInStr)
+	// 		if err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 		mp[currNum] = 0
+	// 		j = k
+	// 	}
+	// }
+	// return mp
 }
 
 func findHowManyMatches(mp1, mp2 map[int]int) int {
@@ -131,6 +169,9 @@ func findHowManyMatches(mp1, mp2 map[int]int) int {
 }
 
 func calculatePointsFromWinningNums(lenOfWinningNums int) int {
+	if lenOfWinningNums == 0 {
+		return 0
+	}
 	curr := 1
 	for i := 1; i < lenOfWinningNums; i++ {
 		curr *= 2
