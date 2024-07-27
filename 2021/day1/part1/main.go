@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
 
 // 199
 // 200
@@ -30,7 +36,41 @@ import "fmt"
 func main() {
 	arrOfMeasurements := createArrOfMeasurements()
 	numOfMeasurementsLargerThanPrevious := findTotalLargerMeasurements(arrOfMeasurements)
-	fmt.Printf("Number of measurements: ", numOfMeasurementsLargerThanPrevious)
+	fmt.Printf("Number of measurements: %v \n", numOfMeasurementsLargerThanPrevious)
+}
+
+func createArrOfMeasurements() []int {
+	fileScanner := createFileScanner()
+	arr := []int{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		num := getNumFromCurrLine(currLine)
+		arr = append(arr, num)
+	}
+	return arr
+}
+
+func getNumFromCurrLine(currLine string) int {
+	n := len(currLine)
+	currNumInStr := ""
+	for i := 0; i < n; i++ {
+		currNumInStr += string(currLine[i])
+	}
+	currNum, err := strconv.Atoi(currNumInStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return currNum
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }
 
 func findTotalLargerMeasurements(arr []int) int {
