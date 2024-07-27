@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/heap"
 	"fmt"
 	"log"
 	"os"
@@ -31,28 +32,47 @@ import (
 //
 // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 
+type maxHeap []int
+
+func (h maxHeap) Len() int           { return len(h) }
+func (h maxHeap) Less(i, j int) bool { return h[i] > h[j] }
+func (h maxHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *maxHeap) Push(x interface{}) {
+	*h = append(*h, x.(int))
+}
+
+func (h *maxHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
 func main() {
-	listOfCalories := findTheListOfCalories()
-	highestCal := calculatehighestCal(listOfCalories)
+	h := findTheListOfCalories() // list of calories stored in maxHeap
+	highestCal := calculatehighestCal(h)
 	fmt.Printf("highest calorie: %v \n", highestCal)
 }
 
-func findTheListOfCalories() []int {
+func findTheListOfCalories() *maxHeap {
 	fileScanner := createFileScanner()
-	listOfCalories := []int{}
+	h := &maxHeap{} // list of calories stored in maxheap
+	heap.Init(h)
 	totalCalsPerElf := 0
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
 		if n == 0 {
-			listOfCalories = append(listOfCalories, totalCalsPerElf)
+			heap.Push(h, int(totalCalsPerElf))
 			totalCalsPerElf = 0
 			continue
 		}
 		calorie := findCalorieForThisLine(currLine, n)
 		totalCalsPerElf += calorie
 	}
-	return listOfCalories
+	return h
 }
 
 func findCalorieForThisLine(currLine string, n int) int {
@@ -77,12 +97,7 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func calculatehighestCal(cals []int) int {
-	curr := cals[0]
-	for i := 1; i < len(cals); i++ {
-		if cals[i] > curr {
-			curr = cals[i]
-		}
-	}
-	return curr
+func calculatehighestCal(h *maxHeap) int {
+	x := heap.Pop(h).(int)
+	return x
 }
