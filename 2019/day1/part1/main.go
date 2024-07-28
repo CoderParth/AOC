@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -34,8 +35,8 @@ func main() {
 	fmt.Printf("Total Fuel: %v \n", totalFuel)
 }
 
-func getFuelsRequired() []int {
-	arr := []int{}
+func getFuelsRequired() []float64 {
+	arr := []float64{}
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
@@ -47,7 +48,9 @@ func getFuelsRequired() []int {
 	return arr
 }
 
-func calcFuelRequired(n int) int {
+func calcFuelRequired(n int) float64 {
+	fuelRequired := math.Floor(float64(n/3) - 2)
+	return fuelRequired
 }
 
 func getFuelFromALine(currLine string, n int) int {
@@ -73,10 +76,10 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func sumOfFuels(arr []int) int {
-	curr := 0
+func sumOfFuels(arr []float64) int {
+	curr := 0.0
 	for _, v := range arr {
 		curr += v
 	}
-	return curr
+	return int(curr)
 }
