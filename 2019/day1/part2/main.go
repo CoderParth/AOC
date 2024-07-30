@@ -46,17 +46,24 @@ func getFuelsRequired() []float64 {
 		currLine := fileScanner.Text()
 		n := len(currLine)
 		currFuel := getFuelFromALine(currLine, n)
-		fuelRequiredForModule := calcFuelRequired(currFuel)
+		fuelRequiredForModule := calcFuelRequired(float64(currFuel))
 		arr = append(arr, fuelRequiredForModule)
 	}
 	return arr
 }
 
-func calcFuelRequired(n int) float64 {
+func calcFuelRequired(n float64) float64 {
+	curr := float64(n)
 	total, curr := float64(0), float64(0)
 	for n > 0 {
+		fmt.Printf("N : %v \n", n)
 		curr = math.Floor(float64(n/3) - 2)
+		if curr < 0 {
+			break
+		}
 		total += curr
+		fmt.Printf("Total: %v \n", total)
+		n = curr
 	}
 
 	return total
