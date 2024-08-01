@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bufio"
+	"log"
+	"os"
+)
+
 // For example, if you see the following box IDs:
 //
 // abcdef contains no letters that appear exactly two or three times.
@@ -21,4 +27,14 @@ func main() {
 
 func readInputAndCollectStrings() []string {
 	fileScanner := createFileScanner()
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }
