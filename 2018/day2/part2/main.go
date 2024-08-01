@@ -15,50 +15,60 @@ import (
 // fguij
 // axcye
 // wvxyz
-// The IDs abcde and axcye are close, but they differ by two characters (the second and fourth). However, the IDs fghij and fguij differ by exactly one character, the third (h and u). Those must be the correct boxes.
 //
-// What letters are common between the two correct box IDs? (In the example above, this is found by removing the differing character from either ID, producing fgij.)
+// The IDs abcde and axcye are close, but they differ
+// by two characters (the second and fourth). However,
+// the IDs fghij and fguij differ by exactly one character,
+// the third (h and u). Those must be the correct boxes.
+//
+// What letters are common between the two correct box IDs?
+// (In the example above, this is found by removing the
+// differing character from either ID, producing fgij.)
 func main() {
-	totalTwos, totalThrees := readInputAndCollectStrings()
-	checkSum := totalTwos * totalThrees
-	fmt.Printf("check sum: %v \n", checkSum)
+	input := readInputAndCollectStrings()
+	commonChars := findCommonChars(input)
+	fmt.Printf("common ids: %v \n", commonChars)
 }
 
-func readInputAndCollectStrings() (int, int) {
+func readInputAndCollectStrings() []string {
+	arr := []string{}
 	fileScanner := createFileScanner()
-	totalTwos, totalThrees := 0, 0
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
-		n := len(currLine)
-		isTwoPresent, isThreePresent := findTwosAndThrees(currLine, n)
-		if isTwoPresent {
-			totalTwos++
-		}
-		if isThreePresent {
-			totalThrees++
-		}
+		arr = append(arr, currLine)
 	}
-	return totalTwos, totalThrees
+	return arr
 }
 
-func findTwosAndThrees(currLine string, n int) (bool, bool) {
-	mp := make(map[string]int)
-	twos, threes := false, false
-	for i := 0; i < n; i++ {
-		currChar := string(currLine[i])
-		mp[currChar]++
+func findCommonChars(input []string) string {
+	m, n := len(input), len(input[0])
+	for i := 0; i < m-1; i++ {
+		for j := i + 1; j < n; j++ {
+			firstString, secString := input[i], input[j]
+			hasOnlyOneDiffChars, idx := findNumOfDiffCharAndIdx(firstString, secString, n)
+			if hasOnlyOneDiffChars {
+				s := ""
+				s += firstString[0:idx]
+				s += firstString[idx+1 : n]
+				return s
+			}
+		}
 	}
+	return ""
+}
 
+func findNumOfDiffCharAndIdx(s1, s2 string, n int) (bool, int) {
+	numOfDiff, idxOfDiff := 0, 0
 	for i := 0; i < n; i++ {
-		currChar := string(currLine[i])
-		if !twos && mp[currChar] == 2 {
-			twos = true
+		if numOfDiff > 1 {
+			return false, 0
 		}
-		if !threes && mp[currChar] == 3 {
-			threes = true
+		if string(s1[i]) != string(s2[i]) {
+			idxOfDiff = i
+			numOfDiff++
 		}
 	}
-	return twos, threes
+	return true, idxOfDiff
 }
 
 func createFileScanner() *bufio.Scanner {
