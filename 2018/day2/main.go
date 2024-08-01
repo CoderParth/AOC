@@ -34,10 +34,7 @@ func readInputAndCollectStrings() (int, int) {
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
-		fmt.Printf("curr line: %v \n", currLine)
 		isTwoPresent, isThreePresent := findTwosAndThrees(currLine, n)
-		fmt.Printf("twos: %v \n", isTwoPresent)
-		fmt.Printf("threes: %v \n", isThreePresent)
 		if isTwoPresent {
 			totalTwos++
 		}
