@@ -27,7 +27,7 @@ import (
 func main() {
 	input := readInputAndCollectStrings()
 	commonChars := findCommonChars(input)
-	fmt.Printf("common ids: %v \n", commonChars)
+	fmt.Printf("common chars: %v \n", commonChars)
 }
 
 func readInputAndCollectStrings() []string {
@@ -43,7 +43,7 @@ func readInputAndCollectStrings() []string {
 func findCommonChars(input []string) string {
 	m, n := len(input), len(input[0])
 	for i := 0; i < m-1; i++ {
-		for j := i + 1; j < n; j++ {
+		for j := i + 1; j < m; j++ {
 			firstString, secString := input[i], input[j]
 			hasOnlyOneDiffChars, idx := findNumOfDiffCharAndIdx(firstString, secString, n)
 			if hasOnlyOneDiffChars {
