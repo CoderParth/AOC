@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bufio"
+	"log"
+	"os"
+)
+
 // The captcha requires you to review a sequence of digits
 // (your puzzle input) and find the sum of all digits that
 // match the next digit in the list. The list is circular,
@@ -19,5 +25,39 @@ package main
 // What is the solution to your captcha?
 
 func main() {
-	listOf
+	listOfMatchinDigits := findTheArrOfMatchingDigits()
+	total := addAllNums(listOfMatchinDigits)
+}
+
+func findTheArrOfMatchingDigits() []int {
+	fileScanner := createFileScanner()
+	arr := []int{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		n := len(currLine)
+		sumForCurrLine := calcSumForCurrLine(currLine, n)
+		arr = append(arr, sumForCurrLine)
+	}
+	return arr
+}
+
+func calcSumForCurrLine(currLine string, n int) int {
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func addAllNums(arr []int) int {
+	total := 0
+	for _, num := range arr {
+		total += num
+	}
+	return total
 }
