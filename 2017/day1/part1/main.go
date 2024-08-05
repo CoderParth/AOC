@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // The captcha requires you to review a sequence of digits
@@ -27,6 +29,7 @@ import (
 func main() {
 	listOfMatchinDigits := findTheArrOfMatchingDigits()
 	total := addAllNums(listOfMatchinDigits)
+	fmt.Printf("total: %v \n", total)
 }
 
 func findTheArrOfMatchingDigits() []int {
@@ -42,6 +45,27 @@ func findTheArrOfMatchingDigits() []int {
 }
 
 func calcSumForCurrLine(currLine string, n int) int {
+	count := 0
+	for i := 0; i < n; i++ {
+		if i == n-1 {
+			if string(currLine[i]) == string(currLine[0]) {
+				currNum, err := strconv.Atoi(string(currLine[i]))
+				if err != nil {
+					log.Fatal(err)
+				}
+				count += currNum
+			}
+			break
+		}
+		if string(currLine[i]) == string(currLine[i+1]) {
+			currNum, err := strconv.Atoi(string(currLine[i]))
+			if err != nil {
+				log.Fatal(err)
+			}
+			count += currNum
+		}
+	}
+	return count
 }
 
 func createFileScanner() *bufio.Scanner {
