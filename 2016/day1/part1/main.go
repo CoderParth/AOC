@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // The Document indicates that you should start
 // at the given coordinates (where you just landed)
 // and face North. Then, follow the provided sequence:
@@ -18,4 +25,28 @@ package main
 // How many blocks away is Easter Bunny HQ?
 
 func main() {
+	// Moving "up" increases the y-coordinate.
+	// Moving "down" decreases the y-coordinate.
+	// Moving "right" increases the x-coordinate.
+	// Moving "left" decreases the x-coordinate.
+	distance := findTheShortesPath()
+	fmt.Printf("Total block away: %v \n", distance)
+}
+
+func findTheShortesPath() {
+	fileScanner := createFileScanner()
+	x, y := 0, 0
+	currDir := "N"
+	for fileScanner.Scan() {
+	}
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }
