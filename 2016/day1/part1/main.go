@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // The Document indicates that you should start
@@ -33,12 +34,35 @@ func main() {
 	fmt.Printf("Total block away: %v \n", distance)
 }
 
-func findTheShortesPath() {
+func findTheShortesPath() int {
 	fileScanner := createFileScanner()
 	x, y := 0, 0
 	currDir := "N"
 	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		n := len(currLine)
+		dir := string(currLine[0])
+		dist := ""
+		for i := 1; i < n; i++ {
+			dist += string(currLine[i])
+		}
+		currDist, err := strconv.Atoi(dist)
+		if err != nil {
+			log.Fatal(err)
+		}
+		checkConditionsAndEvaluate(&x, &y, &currDir, dir, currDist)
 	}
+	return abs(x) + abs(y)
+}
+
+func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist int) {
+}
+
+func abs(n int) int {
+	if n < 0 {
+		return -n
+	}
+	return n
 }
 
 func createFileScanner() *bufio.Scanner {
