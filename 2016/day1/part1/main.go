@@ -67,6 +67,7 @@ func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist
 			(*x) += currDist
 			(*currDir) = "E"
 		}
+		return
 	}
 
 	if (*currDir) == "E" {
@@ -80,6 +81,35 @@ func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist
 			(*y) -= currDist
 			(*currDir) = "W"
 		}
+		return
+	}
+
+	if (*currDir) == "S" {
+		if dir == "L" {
+			// move Right - increase x-coordinate
+			(*x) += currDist
+			(*currDir) = "E"
+		}
+		if dir == "R" {
+			// move left - decrease x-coordinate
+			(*x) -= currDist
+			(*currDir) = "W"
+		}
+		return
+	}
+
+	if (*currDir) == "W" {
+		if dir == "L" {
+			// move downwards - decrease y-coordinate
+			(*y) -= currDist
+			(*currDir) = "W"
+		}
+		if dir == "R" {
+			// move upwards - increase y-coordinate
+			(*y) += currDist
+			(*currDir) = "N"
+		}
+		return
 	}
 }
 
