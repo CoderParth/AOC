@@ -41,17 +41,33 @@ func findTheShortesPath() int {
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
-		dir := string(currLine[0])
-		dist := ""
-		for i := 1; i < n; i++ {
-			dist += string(currLine[i])
+		// check the comma (,)  not the whole line
+		for i := 0; i < n; i++ {
+			if string(currLine[i]) == " " {
+				fmt.Println("empty string")
+				continue
+			}
+			dir := string(currLine[i])
+			dist := ""
+			fmt.Printf("dir: %v \n", dir)
+			fmt.Printf("dist: %v \n", dist)
+			for j := i + 1; j < n; j++ {
+				if string(currLine[j]) == "," {
+					currDist, err := strconv.Atoi(dist)
+					if err != nil {
+						log.Fatal(err)
+					}
+					checkConditionsAndEvaluate(&x, &y, &currDir, dir, currDist)
+					i = j + 2
+					break
+				}
+				dist += string(currLine[j])
+
+			}
 		}
-		currDist, err := strconv.Atoi(dist)
-		if err != nil {
-			log.Fatal(err)
-		}
-		checkConditionsAndEvaluate(&x, &y, &currDir, dir, currDist)
 	}
+	fmt.Printf("x : %v \n", x)
+	fmt.Printf("y : %v \n", y)
 	return abs(x) + abs(y)
 }
 
