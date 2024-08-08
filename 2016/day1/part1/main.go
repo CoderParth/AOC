@@ -56,6 +56,31 @@ func findTheShortesPath() int {
 }
 
 func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist int) {
+	if (*currDir) == "N" {
+		if dir == "L" {
+			// move left - decrease x-coordinate
+			(*x) -= currDist
+			(*currDir) = "W"
+		}
+		if dir == "R" {
+			// move Right - increase x-coordinate
+			(*x) += currDist
+			(*currDir) = "E"
+		}
+	}
+
+	if (*currDir) == "E" {
+		if dir == "L" {
+			// move upwards - increase y-coordinate
+			(*y) += currDist
+			(*currDir) = "N"
+		}
+		if dir == "R" {
+			// move downwards - decrease y-coordinate
+			(*y) -= currDist
+			(*currDir) = "W"
+		}
+	}
 }
 
 func abs(n int) int {
