@@ -44,30 +44,24 @@ func findTheShortesPath() int {
 		// check the comma (,)  not the whole line
 		for i := 0; i < n; i++ {
 			if string(currLine[i]) == " " {
-				fmt.Println("empty string")
 				continue
 			}
 			dir := string(currLine[i])
 			dist := ""
-			fmt.Printf("dir: %v \n", dir)
-			fmt.Printf("dist: %v \n", dist)
 			for j := i + 1; j < n; j++ {
-				if string(currLine[j]) == "," {
+				if string(currLine[j]) == "," || j == n-1 {
 					currDist, err := strconv.Atoi(dist)
 					if err != nil {
 						log.Fatal(err)
 					}
 					checkConditionsAndEvaluate(&x, &y, &currDir, dir, currDist)
-					i = j + 2
+					i = j + 1
 					break
 				}
 				dist += string(currLine[j])
-
 			}
 		}
 	}
-	fmt.Printf("x : %v \n", x)
-	fmt.Printf("y : %v \n", y)
 	return abs(x) + abs(y)
 }
 
@@ -95,7 +89,7 @@ func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist
 		if dir == "R" {
 			// move downwards - decrease y-coordinate
 			(*y) -= currDist
-			(*currDir) = "W"
+			(*currDir) = "S"
 		}
 		return
 	}
@@ -118,7 +112,7 @@ func checkConditionsAndEvaluate(x, y *int, currDir *string, dir string, currDist
 		if dir == "L" {
 			// move downwards - decrease y-coordinate
 			(*y) -= currDist
-			(*currDir) = "W"
+			(*currDir) = "S"
 		}
 		if dir == "R" {
 			// move upwards - increase y-coordinate
