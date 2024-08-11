@@ -86,7 +86,7 @@ func convertStrToNum(curr string) int {
 }
 
 func createFileScanner() *bufio.Scanner {
-	readFile, err := os.Open("in.txt")
+	readFile, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
