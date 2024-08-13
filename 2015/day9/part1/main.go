@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -62,20 +63,61 @@ func parseInput() {
 		graph[p1] = distance
 		graph[p2] = distance
 	}
-	cities := createSet(graph)          // creates set of cites
-	route := createPermutations(cities) // create permutations of all the routes
-	fmt.Printf("route: %v \n", route)
+	cities := createSet(graph)           // creates set of cites
+	routes := createPermutations(cities) // create permutations of all the routes
+	shortestDistance := findShortestDistance(routes, graph)
+	fmt.Printf("Shortest Distance: %v \n", shortestDistance)
+}
+
+func findShortestDistance(routes [][]string, graph map[Pair]int) int {
+	m, n := len(routes), len(routes[0])
+	shortest := math.MaxInt
+
+	for i := 0; i < m; i++ {
+		curr := 0
+		for j := 0; j < n-1; j++ {
+			d1 := routes[i][j]
+			d2 := routes[i][j+1]
+			currPair := Pair{d1: d1, d2: d2}
+			if v, ok := graph[currPair]; ok {
+				curr += v
+			}
+		}
+		shortest = min(shortest, curr)
+	}
+	return shortest
 }
 
 func createPermutations(cities map[string]int) [][]string {
-	perm := [][]string{}
 	arr := []string{}
 	for k := range cities {
 		arr = append(arr, k)
 	}
-	fmt.Printf("arr:  %v\n", arr)
+	return permute(arr)
+}
 
-	return perm
+func permute(nums []string) [][]string {
+	n := len(nums)
+	ans := make([][]string, 0)
+	curr := make([]string, 0, n)
+	vis := make(map[int]int)
+	var backtrack func(idx int)
+	backtrack = func(idx int) {
+		if len(curr) == n {
+			ans = append(ans, append([]string{}, curr...))
+		}
+		for i := 0; i < n; i++ {
+			if vis[i] == 0 {
+				vis[i]++
+				curr = append(curr, nums[i])
+				backtrack(i + 1)
+				curr = curr[:len(curr)-1]
+				vis[i]--
+			}
+		}
+	}
+	backtrack(0)
+	return ans
 }
 
 func createSet(graph map[Pair]int) map[string]int {
@@ -106,7 +148,6 @@ func parseCitiesAndDistance(line string, n int) (string, string, int) {
 			i = j
 		}
 	}
-	fmt.Printf("input: %v \n", input)
 	distance := convertStrToInt(input[len(input)-1])
 	return input[0], input[2], distance
 }
