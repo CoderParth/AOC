@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // Look-and-say sequences are generated iteratively,
@@ -49,5 +50,29 @@ func createFileScanner() *bufio.Scanner {
 
 func createSequence(input string) string {
 	fmt.Printf("input: %v \n", input)
-	return ""
+	seq := ""
+	n := len(input)
+	for i := 0; i < n; i++ {
+		currNum := input[i]
+		fmt.Printf("curr num: %v \n", string(currNum))
+		numOfRepeats, newIdx := findNumOfRepeats(input, i, n)
+		fmt.Printf("num of repeats: %v \n", string(numOfRepeats))
+		seq += string(numOfRepeats) + string(currNum)
+		i = newIdx - 1
+	}
+	fmt.Printf("seq : %v\n", seq)
+	return seq
+}
+
+func findNumOfRepeats(input string, idx, n int) (string, int) {
+	numOfRepeats := 1
+	i := idx + 1
+	for ; i < n; i++ {
+		if string(input[i]) != string(input[idx]) {
+			break
+		}
+		numOfRepeats++
+	}
+	repeats := strconv.Itoa(numOfRepeats)
+	return repeats, i
 }
