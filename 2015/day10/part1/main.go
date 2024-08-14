@@ -25,7 +25,9 @@ import (
 // this process 40 times. What is the length of the result?
 func main() {
 	input := parseInput()
-	sequence := createSequence(input)
+	time := 0
+	sequence := createSequence(input, time)
+	fmt.Printf("Sequence: %v\n", sequence)
 	fmt.Printf("Length of the result: %v \n", len(sequence))
 }
 
@@ -48,20 +50,21 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func createSequence(input string) string {
-	fmt.Printf("input: %v \n", input)
+func createSequence(input string, time int) string {
+	fmt.Printf("Time: %v \n", time)
+	if (time) == 40 {
+		return input
+	}
 	seq := ""
 	n := len(input)
 	for i := 0; i < n; i++ {
 		currNum := input[i]
-		fmt.Printf("curr num: %v \n", string(currNum))
 		numOfRepeats, newIdx := findNumOfRepeats(input, i, n)
-		fmt.Printf("num of repeats: %v \n", string(numOfRepeats))
 		seq += string(numOfRepeats) + string(currNum)
 		i = newIdx - 1
 	}
-	fmt.Printf("seq : %v\n", seq)
-	return seq
+	s := createSequence(seq, time+1)
+	return s
 }
 
 func findNumOfRepeats(input string, idx, n int) (string, int) {
