@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // Look-and-say sequences are generated iteratively,
 // using the previous value as input for the next step.
 // For each step, take the previous value, and replace
@@ -16,4 +23,31 @@ package main
 // Starting with the digits in your puzzle input, apply
 // this process 40 times. What is the length of the result?
 func main() {
+	input := parseInput()
+	sequence := createSequence(input)
+	fmt.Printf("Length of the result: %v \n", len(sequence))
+}
+
+func parseInput() string {
+	fileScanner := createFileScanner()
+	curr := ""
+	for fileScanner.Scan() {
+		curr = fileScanner.Text()
+	}
+	return curr
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func createSequence(input string) string {
+	fmt.Printf("input: %v \n", input)
+	return ""
 }
