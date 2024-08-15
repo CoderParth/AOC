@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -42,17 +43,66 @@ type Pair struct {
 
 func main() {
 	input := parseInput()
-	fmt.Printf("Input: %v\n", input)
 	graph := createGraph(input)
-	fmt.Printf("Graph: %v\n", graph)
 	set := createSet(graph)
-	fmt.Printf("Set: %v \n", set)
+	allArangements := permute(set)
+	fmt.Printf("Graph: %v \n", graph)
+	optimalHappiness := findOptimalHappiness(graph, allArangements)
+	fmt.Printf("Optimal Happiness: %v \n", optimalHappiness)
 }
 
-// create a graph
-// create a set of all people
-// create a permutations of all combinations of arrangements
-// find the minimum
+func findOptimalHappiness(graph map[Pair]int, arr [][]string) int {
+	h := math.MinInt
+	m, n := len(arr), len(arr[0])
+	for i := 0; i < m; i++ {
+		curr := 0
+		for j := 0; j < n-1; j++ {
+			firstPerson := arr[i][j]
+			secondPerson := arr[i][j+1]
+			p := Pair{
+				firstPerson,
+				secondPerson,
+			}
+			curr += graph[p]
+			p = Pair{
+				secondPerson,
+				firstPerson,
+			}
+			curr += graph[p]
+
+		}
+		fmt.Printf("Curr Arrangement: %v \n", arr[i])
+		fmt.Printf("curr amount: %v \n", curr)
+		h = max(h, curr)
+	}
+	return h
+}
+
+// find the max
+
+func permute(nums []string) [][]string {
+	n := len(nums)
+	ans := make([][]string, 0)
+	curr := make([]string, 0, n)
+	vis := make(map[int]int)
+	var backtrack func(idx int)
+	backtrack = func(idx int) {
+		if len(curr) == n {
+			ans = append(ans, append([]string{}, curr...))
+		}
+		for i := 0; i < n; i++ {
+			if vis[i] == 0 {
+				vis[i]++
+				curr = append(curr, nums[i])
+				backtrack(i + 1)
+				curr = curr[:len(curr)-1]
+				vis[i]--
+			}
+		}
+	}
+	backtrack(0)
+	return ans
+}
 
 func createSet(graph map[Pair]int) []string {
 	mp := map[string]int{}
