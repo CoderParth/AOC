@@ -46,7 +46,6 @@ func main() {
 	graph := createGraph(input)
 	set := createSet(graph)
 	allArangements := permute(set)
-	fmt.Printf("Graph: %v \n", graph)
 	optimalHappiness := findOptimalHappiness(graph, allArangements)
 	fmt.Printf("Optimal Happiness: %v \n", optimalHappiness)
 }
@@ -56,6 +55,7 @@ func findOptimalHappiness(graph map[Pair]int, arr [][]string) int {
 	m, n := len(arr), len(arr[0])
 	for i := 0; i < m; i++ {
 		curr := 0
+		// clockwise
 		for j := 0; j < n-1; j++ {
 			firstPerson := arr[i][j]
 			secondPerson := arr[i][j+1]
@@ -64,21 +64,37 @@ func findOptimalHappiness(graph map[Pair]int, arr [][]string) int {
 				secondPerson,
 			}
 			curr += graph[p]
-			p = Pair{
-				secondPerson,
+		}
+		// for the last and the first
+		f := arr[i][n-1]
+		s := arr[i][0]
+		p := Pair{
+			firstPerson:  f,
+			secondPerson: s,
+		}
+		curr += graph[p]
+		// anti clock wise
+		for j := n - 1; j >= 1; j-- {
+			firstPerson := arr[i][j]
+			secondPerson := arr[i][j-1]
+			p := Pair{
 				firstPerson,
+				secondPerson,
 			}
 			curr += graph[p]
-
 		}
-		fmt.Printf("Curr Arrangement: %v \n", arr[i])
-		fmt.Printf("curr amount: %v \n", curr)
+		// for the first and the last
+		f = arr[i][0]
+		s = arr[i][n-1]
+		p = Pair{
+			firstPerson:  f,
+			secondPerson: s,
+		}
+		curr += graph[p]
 		h = max(h, curr)
 	}
 	return h
 }
-
-// find the max
 
 func permute(nums []string) [][]string {
 	n := len(nums)
@@ -120,7 +136,6 @@ func createGraph(input [][]string) map[Pair]int {
 	graph := make(map[Pair]int)
 	m := len(input)
 	for i := 0; i < m; i++ {
-		fmt.Printf("curr input: %v\n", input[i])
 		currPerson := string(input[i][0])
 		nextPerson := string(input[i][3])
 		gainOrLose := string(input[i][1])
