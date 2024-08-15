@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // Alice would gain 54 happiness units by sitting next to Bob.
@@ -34,14 +35,61 @@ import (
 //
 // What is the total change in happiness for the optimal seating
 // arrangement of the actual guest list?
+type Pair struct {
+	firstPerson  string
+	secondPerson string
+}
+
 func main() {
 	input := parseInput()
 	fmt.Printf("Input: %v\n", input)
+	graph := createGraph(input)
+	fmt.Printf("Graph: %v\n", graph)
+	set := createSet(graph)
+	fmt.Printf("Set: %v \n", set)
 }
 
 // create a graph
+// create a set of all people
 // create a permutations of all combinations of arrangements
 // find the minimum
+
+func createSet(graph map[Pair]int) []string {
+	mp := map[string]int{}
+	for k := range graph {
+		mp[k.firstPerson] = 0
+	}
+	set := []string{}
+	for k := range mp {
+		set = append(set, k)
+	}
+	return set
+}
+
+func createGraph(input [][]string) map[Pair]int {
+	graph := make(map[Pair]int)
+	m := len(input)
+	for i := 0; i < m; i++ {
+		fmt.Printf("curr input: %v\n", input[i])
+		currPerson := string(input[i][0])
+		nextPerson := string(input[i][3])
+		gainOrLose := string(input[i][1])
+		amount := string(input[i][2])
+		pair := Pair{
+			firstPerson:  currPerson,
+			secondPerson: nextPerson,
+		}
+		a, err := strconv.Atoi(amount)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if string(gainOrLose) == "lose" {
+			a = -a
+		}
+		graph[pair] = a
+	}
+	return graph
+}
 
 func parseInput() [][]string {
 	input := [][]string{}
