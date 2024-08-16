@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bufio"
+	"log"
+	"os"
+)
+
 // Reindeer can only either be flying (always at their top speed) or resting
 // (not moving at all), and always spend whole seconds in either state.
 //
@@ -23,4 +29,37 @@ package main
 // Given the descriptions of each reindeer (in your puzzle input), after
 // exactly 2503 seconds, what distance has the winning reindeer traveled?
 func main() {
+	input := parseInput()
+}
+
+// Parse input
+func parseInput() {
+	fileScanner := createFileScanner()
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		n := len(currLine)
+		arr := extractData(currLine, n)
+	}
+}
+
+func extractData(line string, n int) []string {
+	arr := []string{}
+
+	for i := 0; i < n; i++ {
+		if string(line[i]) == " " {
+			continue
+		}
+		for j := i; j < n; j++ {
+		}
+	}
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }
