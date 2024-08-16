@@ -30,9 +30,30 @@ func main() {
 	input := parseInput()
 	graph := createGraph(input)
 	set := createSet(graph)
+	graph = addYouInTheGraph(graph, set)
+	set = append(set, "ME")
 	allArangements := permute(set)
 	optimalHappiness := findOptimalHappiness(graph, allArangements)
 	fmt.Printf("Optimal Happiness: %v \n", optimalHappiness)
+}
+
+func addYouInTheGraph(graph map[Pair]int, set []string) map[Pair]int {
+	for i := 0; i < len(set); i++ {
+		curr := set[i]
+		// person -> ME
+		p := Pair{
+			firstPerson:  curr,
+			secondPerson: "ME",
+		}
+		graph[p] = 0
+		// ME -> person
+		p2 := Pair{
+			firstPerson:  "ME",
+			secondPerson: curr,
+		}
+		graph[p2] = 0
+	}
+	return graph
 }
 
 func findOptimalHappiness(graph map[Pair]int, arr [][]string) int {
