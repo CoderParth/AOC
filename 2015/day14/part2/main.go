@@ -115,32 +115,36 @@ func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[stri
 			}
 		}
 		// At the end of each second, the leading reindeers get an extra point
-		h := &maxHeap{}
-		heap.Init(h)
-		for b, record := range fr {
-			hpStruct := hp{
-				bird:     b,
-				distance: record.distanceTravelled,
-			}
-			heap.Push(h, hpStruct)
-		}
-		arrOfLeaders := []hp{}
-		leader := heap.Pop(h).(hp)
-		leaderDistance := leader.distance
-		arrOfLeaders = append(arrOfLeaders, leader)
-		for h.Len() > 0 {
-			curr := heap.Pop(h).(hp)
-			if leaderDistance > curr.distance {
-				break
-			}
-			arrOfLeaders = append(arrOfLeaders, curr)
-		}
+		arrOfLeaders := findCurrLeaders(fr)
 		for _, l := range arrOfLeaders {
 			fr[l.bird].points++
 		}
-
 	}
 	return fr
+}
+
+func findCurrLeaders(fr map[string]*FlyingRecord) []hp {
+	h := &maxHeap{}
+	heap.Init(h)
+	for b, record := range fr {
+		hpStruct := hp{
+			bird:     b,
+			distance: record.distanceTravelled,
+		}
+		heap.Push(h, hpStruct)
+	}
+	arrOfLeaders := []hp{}
+	leader := heap.Pop(h).(hp)
+	leaderDistance := leader.distance
+	arrOfLeaders = append(arrOfLeaders, leader)
+	for h.Len() > 0 {
+		curr := heap.Pop(h).(hp)
+		if leaderDistance > curr.distance {
+			break
+		}
+		arrOfLeaders = append(arrOfLeaders, curr)
+	}
+	return arrOfLeaders
 }
 
 func initializeFlyingRecords(input map[string]Attributes) map[string]*FlyingRecord {
