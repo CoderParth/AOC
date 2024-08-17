@@ -58,13 +58,14 @@ type FlyingRecord struct {
 
 func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[string]*FlyingRecord {
 	fr := initializeFlyingRecords(input)
-	for i := 0; i < totalTime; i++ {
+	for i := 1; i <= totalTime; i++ {
 		for bird, attribute := range input {
-			fmt.Printf("Bird: %v\n", bird)
-			fmt.Printf("Attribute: %v\n", attribute)
-			if fr[bird].flightTime == attribute.flyingTime+1 {
+			fmt.Printf("Second: %v \n", i)
+			fmt.Printf("Bird and distance: %v, %v \n", fr[bird], fr[bird].distanceTravelled)
+			if fr[bird].flightTime == attribute.flyingTime {
 				fr[bird].flightTime = 0
 				fr[bird].isResting = true
+				fr[bird].elapsedRestTime++
 			}
 
 			if !fr[bird].isResting {
@@ -79,6 +80,7 @@ func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[stri
 			if fr[bird].elapsedRestTime == attribute.restingPeriod {
 				fr[bird].flightTime = 0
 				fr[bird].isResting = false
+				fr[bird].elapsedRestTime = 0
 			}
 		}
 	}
