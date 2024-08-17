@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/heap"
 	"fmt"
 	"log"
 	"math"
@@ -32,17 +33,6 @@ import (
 //
 // Again given the descriptions of each reindeer (in your puzzle input),
 // after exactly 2503 seconds, how many points does the winning reindeer have?
-func main() {
-	input := parseInput()
-	totalTime := 2503
-	flyingInfo := calculateFlyingRecords(input, totalTime)
-	maxDistance := math.MinInt
-	for k, v := range flyingInfo {
-		fmt.Printf("Bird info: %v, %v \n", k, v)
-		maxDistance = max(maxDistance, v.distanceTravelled)
-	}
-	fmt.Printf("Max distance: %v \n", maxDistance)
-}
 
 type Attributes struct {
 	speed         int
@@ -55,6 +45,49 @@ type FlyingRecord struct {
 	flightTime        int
 	isResting         bool
 	elapsedRestTime   int
+	points            int
+}
+
+type hp struct {
+	bird     string
+	distance int
+}
+
+type maxHeap []hp
+
+func (h maxHeap) Len() int           { return len(h) }
+func (h maxHeap) Less(i, j int) bool { return h[i].distance > h[j].distance }
+func (h maxHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *maxHeap) Push(x interface{}) {
+	*h = append(*h, x.(hp))
+}
+
+func (h *maxHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+func (h *maxHeap) Peek() hp {
+	if len(*h) > 0 {
+		return (*h)[0]
+	}
+	return hp{}
+}
+
+func main() {
+	input := parseInput()
+	totalTime := 1000
+	flyingInfo := calculateFlyingRecords(input, totalTime)
+	maxPoints := math.MinInt
+	for k, v := range flyingInfo {
+		fmt.Printf("Bird info: %v, %v \n", k, v)
+		maxPoints = max(maxPoints, v.points)
+	}
+	fmt.Printf("Max Points: %v \n", maxPoints)
 }
 
 func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[string]*FlyingRecord {
@@ -81,6 +114,31 @@ func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[stri
 				fr[bird].elapsedRestTime = 0
 			}
 		}
+		// At the end of each second, the leading reindeers get an extra point
+		h := &maxHeap{}
+		heap.Init(h)
+		for b, record := range fr {
+			hpStruct := hp{
+				bird:     b,
+				distance: record.distanceTravelled,
+			}
+			heap.Push(h, hpStruct)
+		}
+		arrOfLeaders := []hp{}
+		leader := heap.Pop(h).(hp)
+		leaderDistance := leader.distance
+		arrOfLeaders = append(arrOfLeaders, leader)
+		for h.Len() > 0 {
+			curr := heap.Pop(h).(hp)
+			if leaderDistance > curr.distance {
+				break
+			}
+			arrOfLeaders = append(arrOfLeaders, curr)
+		}
+		for _, l := range arrOfLeaders {
+			fr[l.bird].points++
+		}
+
 	}
 	return fr
 }
@@ -93,6 +151,7 @@ func initializeFlyingRecords(input map[string]Attributes) map[string]*FlyingReco
 			flightTime:        0,
 			isResting:         false,
 			elapsedRestTime:   0,
+			points:            0,
 		}
 		mp[k] = initial
 	}
