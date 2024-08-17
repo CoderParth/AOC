@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -32,16 +33,15 @@ import (
 // exactly 2503 seconds, what distance has the winning reindeer traveled?
 func main() {
 	input := parseInput()
-	fmt.Printf("input: %v \n", input)
-	totalTime := 1000
+	totalTime := 2503
 	flyingInfo := calculateFlyingRecords(input, totalTime)
-	fmt.Printf("Comet info: %v \n", flyingInfo["Comet"])
-	fmt.Printf("Dancer info: %v \n", flyingInfo["Dancer"])
+	maxDistance := math.MinInt
+	for k, v := range flyingInfo {
+		fmt.Printf("Bird info: %v, %v \n", k, v)
+		maxDistance = max(maxDistance, v.distanceTravelled)
+	}
+	fmt.Printf("Max distance: %v \n", maxDistance)
 }
-
-// calculate the distance
-// keep a record of distance, restPeriod, isResting, elapsedRestTime
-//
 
 type Attributes struct {
 	speed         int
@@ -60,12 +60,9 @@ func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[stri
 	fr := initializeFlyingRecords(input)
 	for i := 1; i <= totalTime; i++ {
 		for bird, attribute := range input {
-			fmt.Printf("Second: %v \n", i)
-			fmt.Printf("Bird and distance: %v, %v \n", fr[bird], fr[bird].distanceTravelled)
 			if fr[bird].flightTime == attribute.flyingTime {
 				fr[bird].flightTime = 0
 				fr[bird].isResting = true
-				fr[bird].elapsedRestTime++
 			}
 
 			if !fr[bird].isResting {
@@ -101,7 +98,6 @@ func initializeFlyingRecords(input map[string]Attributes) map[string]*FlyingReco
 	return mp
 }
 
-// Parse input
 func parseInput() map[string]Attributes {
 	mp := make(map[string]Attributes)
 	fileScanner := createFileScanner()
