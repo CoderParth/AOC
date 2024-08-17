@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 )
@@ -30,28 +31,49 @@ import (
 // exactly 2503 seconds, what distance has the winning reindeer traveled?
 func main() {
 	input := parseInput()
+	fmt.Printf("input: %v \n", input)
 }
 
 // Parse input
-func parseInput() {
+func parseInput() [][]string {
+	inp := [][]string{}
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
 		arr := extractData(currLine, n)
+		filteredArr := filterData(arr)
+		inp = append(inp, filteredArr)
 	}
+	return inp
+}
+
+func filterData(arr []string) []string {
+	filteredArr := []string{}
+	filteredArr = append(filteredArr, arr[0])
+	filteredArr = append(filteredArr, arr[3])
+	filteredArr = append(filteredArr, arr[6])
+	filteredArr = append(filteredArr, arr[13])
+	return filteredArr
 }
 
 func extractData(line string, n int) []string {
 	arr := []string{}
-
 	for i := 0; i < n; i++ {
 		if string(line[i]) == " " {
 			continue
 		}
+		curr := ""
 		for j := i; j < n; j++ {
+			if string(line[j]) == " " || j == n-1 {
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			curr += string(line[j])
 		}
 	}
+	return arr
 }
 
 func createFileScanner() *bufio.Scanner {
