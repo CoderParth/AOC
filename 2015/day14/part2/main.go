@@ -80,7 +80,7 @@ func (h *maxHeap) Peek() hp {
 
 func main() {
 	input := parseInput()
-	totalTime := 1000
+	totalTime := 2503
 	flyingInfo := calculateFlyingRecords(input, totalTime)
 	maxPoints := math.MinInt
 	for k, v := range flyingInfo {
