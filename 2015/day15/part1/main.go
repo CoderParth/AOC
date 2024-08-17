@@ -39,7 +39,49 @@ type Properties struct {
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
-	fmt.Printf("Input: %v \n", input)
+	n := len(input) // the total number of ingredients
+	maxAmount := 100
+	arr := make([]int, n)
+	highestScore := 0
+	generateCombinations(arr, n, 0, maxAmount, &highestScore, input)
+	fmt.Printf("Highest Score: %v \n", highestScore)
+}
+
+func generateCombinations(arr []int, n, index, remaining int, highestScore *int, input map[string]Properties) {
+	if index == n-1 {
+		arr[index] = remaining
+		fmt.Printf("Arr: %v \n", arr)
+		score := calculateScore(input, arr)
+		if score > *highestScore {
+			*highestScore = score
+		}
+		return
+	}
+	for i := 0; i <= remaining; i++ {
+		arr[index] = i
+		generateCombinations(arr, n, index+1, remaining-i, highestScore, input)
+	}
+}
+
+func calculateScore(input map[string]Properties, arr []int) int {
+	c, d, f, t := 0, 0, 0, 0 // capacity, durability, flavor, texture
+	set := []string{}
+	for k := range input {
+		set = append(set, k)
+	}
+	for i := 0; i < len(arr); i++ {
+		v := input[set[i]]
+		c += v.capacity * arr[i]
+		d += v.durability * arr[i]
+		f += v.flavor * arr[i]
+		t += v.texture * arr[i]
+
+	}
+	if c <= 0 || d <= 0 || f <= 0 || t <= 0 {
+		return 0
+	}
+	totalScore := c * d * f * t
+	return totalScore
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -65,7 +107,6 @@ func parseInput(fileScanner *bufio.Scanner) map[string]Properties {
 }
 
 func createPropertiesStruct(arr []string) Properties {
-	fmt.Printf("Arr is: %v \n", arr)
 	capacity := convStrToInt(arr[2])
 	durability := convStrToInt(arr[4])
 	flavor := convStrToInt(arr[6])
