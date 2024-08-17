@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // Reindeer can only either be flying (always at their top speed) or resting
@@ -32,29 +33,104 @@ import (
 func main() {
 	input := parseInput()
 	fmt.Printf("input: %v \n", input)
+	totalTime := 1000
+	flyingInfo := calculateFlyingRecords(input, totalTime)
+	fmt.Printf("Comet info: %v \n", flyingInfo["Comet"])
+	fmt.Printf("Dancer info: %v \n", flyingInfo["Dancer"])
+}
+
+// calculate the distance
+// keep a record of distance, restPeriod, isResting, elapsedRestTime
+//
+
+type Attributes struct {
+	speed         int
+	flyingTime    int
+	restingPeriod int
+}
+
+type FlyingRecord struct {
+	distanceTravelled int
+	flightTime        int
+	isResting         bool
+	elapsedRestTime   int
+}
+
+func calculateFlyingRecords(input map[string]Attributes, totalTime int) map[string]*FlyingRecord {
+	fr := initializeFlyingRecords(input)
+	for i := 0; i < totalTime; i++ {
+		for bird, attribute := range input {
+			fmt.Printf("Bird: %v\n", bird)
+			fmt.Printf("Attribute: %v\n", attribute)
+			if fr[bird].flightTime == attribute.flyingTime+1 {
+				fr[bird].flightTime = 0
+				fr[bird].isResting = true
+			}
+
+			if !fr[bird].isResting {
+				fr[bird].distanceTravelled += attribute.speed
+				fr[bird].flightTime++
+			}
+
+			if fr[bird].isResting {
+				fr[bird].elapsedRestTime++
+			}
+
+			if fr[bird].elapsedRestTime == attribute.restingPeriod {
+				fr[bird].flightTime = 0
+				fr[bird].isResting = false
+			}
+		}
+	}
+	return fr
+}
+
+func initializeFlyingRecords(input map[string]Attributes) map[string]*FlyingRecord {
+	mp := make(map[string]*FlyingRecord)
+	for k := range input {
+		initial := &FlyingRecord{
+			distanceTravelled: 0,
+			flightTime:        0,
+			isResting:         false,
+			elapsedRestTime:   0,
+		}
+		mp[k] = initial
+	}
+	return mp
 }
 
 // Parse input
-func parseInput() [][]string {
-	inp := [][]string{}
+func parseInput() map[string]Attributes {
+	mp := make(map[string]Attributes)
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		n := len(currLine)
 		arr := extractData(currLine, n)
-		filteredArr := filterData(arr)
-		inp = append(inp, filteredArr)
+		filterData(arr, mp)
 	}
-	return inp
+	return mp
 }
 
-func filterData(arr []string) []string {
-	filteredArr := []string{}
-	filteredArr = append(filteredArr, arr[0])
-	filteredArr = append(filteredArr, arr[3])
-	filteredArr = append(filteredArr, arr[6])
-	filteredArr = append(filteredArr, arr[13])
-	return filteredArr
+func filterData(arr []string, mp map[string]Attributes) {
+	name := arr[0]
+	speed := convertStrToInt(arr[3])
+	flyingTime := convertStrToInt(arr[6])
+	restingPeriod := convertStrToInt(arr[13])
+	a := Attributes{
+		speed,
+		flyingTime,
+		restingPeriod,
+	}
+	mp[name] = a
+}
+
+func convertStrToInt(a string) int {
+	num, err := strconv.Atoi(a)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
 }
 
 func extractData(line string, n int) []string {
