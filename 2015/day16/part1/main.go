@@ -48,24 +48,11 @@ import (
 //
 // What is the number of the Sue that got you the gift?
 
-//	type Compounds struct {
-//		children    string
-//		cats        string
-//		samoyeds    string
-//		pomeranians string
-//		akitas      string
-//		vizslas     string
-//		goldfish    string
-//		trees       string
-//		cars        string
-//		perfumes    string
-//	}
 func main() {
 	detectedCompounds := createDetectedComopoundsMap()
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
 	correctAuntSue := findCorrectSue(detectedCompounds, input)
-	fmt.Printf("Input: %v \n", input)
 	fmt.Printf("Correct Aunt Sue: %v \n", correctAuntSue)
 }
 
@@ -145,16 +132,16 @@ func createArr(line string, n int) []string {
 
 func createDetectedComopoundsMap() map[string]string {
 	mp := map[string]string{
-		"	children": "3",
-		"cats:   ":  "7",
-		"samoyeds":  "2",
-		"pomerani":  "3",
-		"akitas: ":  "0",
-		"vizslas:":  "0",
-		"goldfish":  "5",
-		"trees:  ":  "3",
-		"cars:   ":  "2",
-		"perfumes":  "1",
+		"children":    "3",
+		"cats":        "7",
+		"samoyeds":    "2",
+		"pomeranians": "3",
+		"akitas":      "0",
+		"vizslas:":    "0",
+		"goldfish":    "5",
+		"trees":       "3",
+		"cars":        "2",
+		"perfumes":    "1",
 	}
 	return mp
 }
