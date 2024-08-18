@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bufio"
+	"log"
+	"os"
+)
+
 // You have 500 Aunts named "Sue".
 //
 // So, to avoid sending the card to the wrong person, you need to figure
@@ -40,5 +46,53 @@ package main
 // Things missing from your list aren't zero - you simply don't remember the value.
 //
 // What is the number of the Sue that got you the gift?
+
+type Compounds struct {
+	children    string
+	cats        string
+	samoyeds    string
+	pomeranians string
+	akitas      string
+	vizslas     string
+	goldfish    string
+	trees       string
+	cars        string
+	perfumes    string
+}
+
 func main() {
+	detectedCompounds := createDetectedComopoundsMap()
+	fileScanner := createFileScanner()
+	input := parseInput(fileScanner)
+}
+
+func parseInput(fileScanner *bufio.Scanner) map[string]Compounds {
+}
+
+func createDetectedComopoundsMap() map[string]Compounds {
+	mp := make(map[string]Compounds)
+	c := Compounds{
+		children:    "3",
+		cats:        "7",
+		samoyeds:    "2",
+		pomeranians: "3",
+		akitas:      "0",
+		vizslas:     "0",
+		goldfish:    "5",
+		trees:       "3",
+		cars:        "2",
+		perfumes:    "1",
+	}
+	mp["Real"] = c
+	return mp
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }
