@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // --- Part Two ---
@@ -21,7 +22,7 @@ import (
 //
 // What is the number of the real Aunt Sue?
 func main() {
-	detectedCompounds := createDetectedComopoundsMap()
+	detectedCompounds := createDetectedCompoundsMap()
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
 	correctAuntSue := findCorrectSue(detectedCompounds, input)
@@ -33,13 +34,13 @@ func findCorrectSue(c map[string]string, input map[string]map[string]string) str
 		numOfSimilarVals := 0
 		for compound, compoundVal := range v {
 			if compound == "cats" || compound == "trees" {
-				if c[compound] < compoundVal {
+				if convStrToInt(c[compound]) < convStrToInt(compoundVal) {
 					numOfSimilarVals++
 				}
 				continue
 			}
 			if compound == "pomeranians" || compound == "goldfish" {
-				if c[compound] > compoundVal {
+				if convStrToInt(c[compound]) > convStrToInt(compoundVal) {
 					numOfSimilarVals++
 				}
 				continue
@@ -53,6 +54,14 @@ func findCorrectSue(c map[string]string, input map[string]map[string]string) str
 		}
 	}
 	return "Not Found"
+}
+
+func convStrToInt(n string) int {
+	currNum, err := strconv.Atoi(n)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return currNum
 }
 
 func parseInput(fileScanner *bufio.Scanner) map[string]map[string]string {
@@ -82,7 +91,6 @@ func createList(arr []string) (string, map[string]string) {
 	third := arr[6]
 	third = third[0 : len(third)-1]
 	thirdValue := arr[7]
-	thirdValue = thirdValue[0 : len(thirdValue)-1]
 	mp[first] = firstValue
 	mp[second] = secondValue
 	mp[third] = thirdValue
@@ -114,14 +122,14 @@ func createArr(line string, n int) []string {
 	return arr
 }
 
-func createDetectedComopoundsMap() map[string]string {
+func createDetectedCompoundsMap() map[string]string {
 	mp := map[string]string{
 		"children":    "3",
 		"cats":        "7",
 		"samoyeds":    "2",
 		"pomeranians": "3",
 		"akitas":      "0",
-		"vizslas:":    "0",
+		"vizslas":     "0",
 		"goldfish":    "5",
 		"trees":       "3",
 		"cars":        "2",
