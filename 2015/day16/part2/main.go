@@ -30,7 +30,6 @@ func main() {
 
 func findCorrectSue(c map[string]string, input map[string]map[string]string) string {
 	for currSue, v := range input {
-		fmt.Printf("curr Sue: %v \n", currSue)
 		numOfSimilarVals := 0
 		for compound, compoundVal := range v {
 			if compound == "cats" || compound == "trees" {
