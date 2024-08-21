@@ -25,7 +25,7 @@ import (
 // Filling all containers entirely, how many different combinations
 // of containers can exactly fit all 150 liters of eggnog?
 func main() {
-	litersToStore := 25
+	litersToStore := 150
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create Array from input
 	subsets := findSubsets(input)
