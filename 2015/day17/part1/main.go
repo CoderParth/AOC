@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -27,6 +28,47 @@ func main() {
 	litersToStore := 25
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create Array from input
+	subsets := findSubsets(input)
+	numOfCombinations := findDiffNumOfCombinations(subsets, litersToStore)
+	fmt.Printf("Num of combinations: %v \n", numOfCombinations)
+}
+
+func findDiffNumOfCombinations(subsets [][]int, litersToStore int) int {
+	total := 0
+	for i := 0; i < len(subsets); i++ {
+		sum := calculateSum(subsets[i])
+		if sum == litersToStore {
+			total++
+		}
+	}
+	return total
+}
+
+func calculateSum(nums []int) int {
+	totalSum := 0
+	for i := 0; i < len(nums); i++ {
+		totalSum += nums[i]
+	}
+	return totalSum
+}
+
+func findSubsets(input []int) [][]int {
+	res := [][]int{}
+	curr := []int{}
+	backTrack(0, input, &curr, &res)
+	return res
+}
+
+func backTrack(idx int, input []int, curr *[]int, res *[][]int) {
+	copyOfCurr := make([]int, len(*curr))
+	copy(copyOfCurr, (*curr))
+	*res = append(*res, copyOfCurr)
+
+	for i := idx; i < len(input); i++ {
+		*curr = append(*curr, input[i])
+		backTrack(i+1, input, curr, res)
+		*curr = (*curr)[0 : len(*curr)-1]
+	}
 }
 
 func parseInput(fileScanner *bufio.Scanner) []int {
