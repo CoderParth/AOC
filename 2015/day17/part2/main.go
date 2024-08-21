@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -23,23 +24,36 @@ import (
 // was two. There were three ways to use that many
 // containers, and so the answer there would be 3.
 func main() {
-	litersToStore := 150
+	litersToStore := 25
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create Array from input
 	subsets := findSubsets(input)
-	numOfCombinations := findDiffNumOfCombinations(subsets, litersToStore)
-	fmt.Printf("Num of combinations: %v \n", numOfCombinations)
+	numOfMinCombinations := findNumOfMinCombinations(subsets, litersToStore)
+	fmt.Printf("Num of combinations: %v \n", numOfMinCombinations)
 }
 
-func findDiffNumOfCombinations(subsets [][]int, litersToStore int) int {
-	total := 0
+func findNumOfMinCombinations(subsets [][]int, litersToStore int) int {
+	mp := make(map[int]int) // num of containers, num of ways to use that many containers
 	for i := 0; i < len(subsets); i++ {
 		sum := calculateSum(subsets[i])
 		if sum == litersToStore {
-			total++
+			n := len(subsets[i])
+			mp[n]++
 		}
 	}
-	return total
+	fmt.Printf("mp: %v \n", mp)
+	minComb := findMinimumKey(mp)
+	return mp[minComb]
+}
+
+func findMinimumKey(mp map[int]int) int {
+	lowest := math.MaxInt
+	for k := range mp {
+		if k < lowest {
+			lowest = k
+		}
+	}
+	return lowest
 }
 
 func calculateSum(nums []int) int {
