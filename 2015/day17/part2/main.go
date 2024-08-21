@@ -24,7 +24,7 @@ import (
 // was two. There were three ways to use that many
 // containers, and so the answer there would be 3.
 func main() {
-	litersToStore := 25
+	litersToStore := 150
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create Array from input
 	subsets := findSubsets(input)
@@ -41,7 +41,6 @@ func findNumOfMinCombinations(subsets [][]int, litersToStore int) int {
 			mp[n]++
 		}
 	}
-	fmt.Printf("mp: %v \n", mp)
 	minComb := findMinimumKey(mp)
 	return mp[minComb]
 }
