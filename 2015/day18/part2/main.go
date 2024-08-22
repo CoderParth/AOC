@@ -74,10 +74,20 @@ func main() {
 	steps := 100
 	for i := 0; i < steps; i++ {
 		input = animateGrid(input)
+		input = turnLightsOn(input) // For 4 Corners
 	}
 	fmt.Printf("Final Input: %v \n", input)
 	totalOnLights := calculateNumOfOnLights(input)
 	fmt.Printf("Total lights that are on: %v \n", totalOnLights)
+}
+
+func turnLightsOn(input [][]string) [][]string { // turn lights on for four corners of the grid
+	m, n := len(input), len(input[0])
+	input[0][0] = "#"
+	input[0][n-1] = "#"
+	input[m-1][0] = "#"
+	input[m-1][n-1] = "#"
+	return input
 }
 
 func createFileScanner() *bufio.Scanner {
