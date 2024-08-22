@@ -78,7 +78,7 @@ func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // [][]string of input
 	fmt.Printf("Input: %v \n", input)
-	steps := 4
+	steps := 100
 	for i := 0; i < steps; i++ {
 		input = animateGrid(input)
 	}
