@@ -82,7 +82,7 @@ func main() {
 	for i := 0; i < steps; i++ {
 		input = animateGrid(input)
 	}
-	fmt.Printf("Input: %v \n", input)
+	fmt.Printf("Final Input: %v \n", input)
 	totalOnLights := calculateNumOfOnLights(input)
 	fmt.Printf("Total lights that are on: %v \n", totalOnLights)
 }
@@ -126,4 +126,97 @@ func calculateNumOfOnLights(inp [][]string) int {
 		}
 	}
 	return totalOnLights
+}
+
+func animateGrid(inp [][]string) [][]string {
+	animatedGrid := make([][]string, len(inp))
+	m, n := len(inp), len(inp[0])
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			currLight := inp[i][j]
+			on := false
+			if currLight == "#" {
+				on = true
+			}
+			numOfOnNeighbours := calculateNumOfOnNeighbours(inp, i, j)
+			if on && (numOfOnNeighbours == 2 || numOfOnNeighbours == 3) {
+				animatedGrid[i] = append(animatedGrid[i], "#")
+				continue
+			}
+			if !on && (numOfOnNeighbours == 3) {
+				animatedGrid[i] = append(animatedGrid[i], "#")
+				continue
+			}
+			animatedGrid[i] = append(animatedGrid[i], ".")
+		}
+	}
+	return animatedGrid
+}
+
+func calculateNumOfOnNeighbours(inp [][]string, i, j int) int {
+	num, m, n := 0, len(inp), len(inp[0])
+	if i > 0 {
+		// calculate top left diagonal
+		if j > 0 {
+			topLeft := inp[i-1][j-1]
+			if topLeft == "#" {
+				num++
+			}
+		}
+
+		// calculate top
+		top := inp[i-1][j]
+		if top == "#" {
+			num++
+		}
+
+		// calculate top-right diagonal
+		if j < n-1 {
+			topRight := inp[i-1][j+1]
+			if topRight == "#" {
+				num++
+			}
+		}
+	}
+
+	// calculate left
+	if j > 0 {
+		left := inp[i][j-1]
+		if left == "#" {
+			num++
+		}
+	}
+
+	// calculate right
+	if j < n-1 {
+		right := inp[i][j+1]
+		if right == "#" {
+			num++
+		}
+	}
+
+	if i < m-1 {
+		// calculate bottom left
+		if j > 0 {
+			bottomLeft := inp[i+1][j-1]
+			if bottomLeft == "#" {
+				num++
+			}
+		}
+
+		// calculate bottom
+		bottom := inp[i+1][j]
+		if bottom == "#" {
+			num++
+		}
+
+		// calculate bottom right
+		if j < n-1 {
+			bottomRight := inp[i+1][j+1]
+			if bottomRight == "#" {
+				num++
+			}
+		}
+	}
+	return num
 }
