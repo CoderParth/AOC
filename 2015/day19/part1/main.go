@@ -97,7 +97,7 @@ func createArrFromCurrLine(line string) []string {
 		}
 		curr := ""
 		for j := i; j < n; j++ {
-			if string(line[i]) == " " {
+			if string(line[j]) == " " {
 				arr = append(arr, curr)
 				i = j
 				break
@@ -109,6 +109,7 @@ func createArrFromCurrLine(line string) []string {
 				break
 			}
 			curr += string(line[j])
+			fmt.Printf("Curr : %v \n", curr)
 		}
 	}
 
@@ -120,17 +121,9 @@ func createArrFromCurrLine(line string) []string {
 
 func createReplacementMap(input [][]string) map[string][]string {
 	rMp := make(map[string][]string)
-	m, n := len(input), len(input[0])
-	fmt.Printf("N: %v \n", n)
-	// fmt.Printf("Input: %v \n", input)
+	m := len(input)
 	for i := 0; i < m-1; i++ {
-		// fmt.Printf("Input i : %v \n", input[i][0][0])
-		for j := 0; j < n; j++ {
-			fmt.Printf("i j : %v \n", string(input[i][j]))
-		}
-		// for j := 0; j < n; j++ {
-		// 	rMp[input[i][0]] = append(rMp[input[i][0]], input[i][1])
-		// }
+		rMp[input[i][0]] = append(rMp[input[i][0]], input[i][2])
 	}
 	return rMp
 }
