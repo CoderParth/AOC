@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 )
@@ -62,6 +63,9 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create array of all the input
+	fmt.Printf("Input: %v \n", input)
+	rMap := createReplacementMap(input)
+	fmt.Printf("Replacement map: %v \n", rMap)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -74,11 +78,59 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func parseInput(fileScanner *bufio.Scanner) []string {
-	input := []string{}
+func parseInput(fileScanner *bufio.Scanner) [][]string {
+	input := [][]string{}
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
-		input = append(input, currLine)
+		arr := createArrFromCurrLine(currLine)
+		input = append(input, arr)
 	}
 	return input
+}
+
+func createArrFromCurrLine(line string) []string {
+	arr := []string{}
+	n := len(line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == " " {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[i]) == " " {
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			curr += string(line[j])
+		}
+	}
+
+	for _, v := range arr {
+		fmt.Printf("v: %v \n", v)
+	}
+	return arr
+}
+
+func createReplacementMap(input [][]string) map[string][]string {
+	rMp := make(map[string][]string)
+	m, n := len(input), len(input[0])
+	fmt.Printf("N: %v \n", n)
+	// fmt.Printf("Input: %v \n", input)
+	for i := 0; i < m-1; i++ {
+		// fmt.Printf("Input i : %v \n", input[i][0][0])
+		for j := 0; j < n; j++ {
+			fmt.Printf("i j : %v \n", string(input[i][j]))
+		}
+		// for j := 0; j < n; j++ {
+		// 	rMp[input[i][0]] = append(rMp[input[i][0]], input[i][1])
+		// }
+	}
+	return rMp
 }
