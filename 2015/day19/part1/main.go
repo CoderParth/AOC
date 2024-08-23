@@ -66,6 +66,39 @@ func main() {
 	fmt.Printf("Input: %v \n", input)
 	rMap := createReplacementMap(input)
 	fmt.Printf("Replacement map: %v \n", rMap)
+	medicineMolecule := input[len(input)-1][0]
+	fmt.Printf("Medicine Molecule: %v \n", medicineMolecule)
+	numOfDistinctMolecules := findDistinctMolecules(rMap, medicineMolecule)
+	fmt.Printf("Num: %v \n", numOfDistinctMolecules)
+}
+
+func findDistinctMolecules(rMap map[string][]string, m string) int {
+	dMap := make(map[string]int) // map of distinct molecules
+	for i := 0; i < len(m); i++ {
+		singleChar := string(m[i])
+		if _, ok := rMap[singleChar]; ok {
+			for _, v := range rMap[singleChar] {
+				rep := m[0:i]
+				rep += v
+				rep += m[i+1:]
+				dMap[rep]++
+			}
+		}
+		if i < len(m)-1 {
+			dubChar := string(m[i]) + string(m[i+1])
+			if _, ok := rMap[dubChar]; ok {
+				for _, v := range rMap[dubChar] {
+					rep := m[0:i]
+					rep += v
+					if i < len(m)-2 {
+						rep += m[i+2:]
+					}
+					dMap[rep]++
+				}
+			}
+		}
+	}
+	return len(dMap)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -109,12 +142,7 @@ func createArrFromCurrLine(line string) []string {
 				break
 			}
 			curr += string(line[j])
-			fmt.Printf("Curr : %v \n", curr)
 		}
-	}
-
-	for _, v := range arr {
-		fmt.Printf("v: %v \n", v)
 	}
 	return arr
 }
