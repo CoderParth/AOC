@@ -1,5 +1,11 @@
 package main
 
+import (
+	"bufio"
+	"log"
+	"os"
+)
+
 // --- Day 19: Medicine for Rudolph ---
 // Rudolph the Red-Nosed Reindeer is sick! His
 // nose isn't shining very brightly, and he
@@ -54,4 +60,25 @@ package main
 // created after all the different ways you can do one
 // replacement on the medicine molecule?
 func main() {
+	fileScanner := createFileScanner()
+	input := parseInput(fileScanner) // create array of all the input
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func parseInput(fileScanner *bufio.Scanner) []string {
+	input := []string{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		input = append(input, currLine)
+	}
+	return input
 }
