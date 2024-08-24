@@ -37,13 +37,55 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner) // create array of all the input
-	fmt.Printf("Input: %v \n", input)
 	rMap := createReplacementMap(input)
 	fmt.Printf("Replacement map: %v \n", rMap)
 	medicineMolecule := input[len(input)-1][0]
 	fmt.Printf("Medicine Molecule: %v \n", medicineMolecule)
-	numOfDistinctMolecules := findDistinctMolecules(rMap, medicineMolecule)
-	fmt.Printf("Num: %v \n", numOfDistinctMolecules)
+	fewestSteps := fewestStepsFromE(rMap, medicineMolecule) // from e to medicine molecule
+	fmt.Printf("Fewest Steps: %v \n", fewestSteps)
+}
+
+func fewestStepsFromE(rMap map[string][]string, target string) int {
+	queue := []string{"e"}
+	visited := map[string]int{"e": 0}
+
+	for len(queue) > 0 {
+		fmt.Printf("Q len: %v \n", len(queue))
+		current := queue[0]
+		queue = queue[1:]
+		currentSteps := visited[current]
+
+		if current == target {
+			return currentSteps
+		}
+
+		for i := 0; i < len(current); i++ {
+			singleChar := string(current[i])
+			if replacements, ok := rMap[singleChar]; ok {
+				for _, replacement := range replacements {
+					newMolecule := current[:i] + replacement + current[i+1:]
+					if _, seen := visited[newMolecule]; !seen {
+						visited[newMolecule] = currentSteps + 1
+						queue = append(queue, newMolecule)
+					}
+				}
+			}
+
+			if i < len(current)-1 {
+				doubleChar := current[i : i+2]
+				if replacements, ok := rMap[doubleChar]; ok {
+					for _, replacement := range replacements {
+						newMolecule := current[:i] + replacement + current[i+2:]
+						if _, seen := visited[newMolecule]; !seen {
+							visited[newMolecule] = currentSteps + 1
+							queue = append(queue, newMolecule)
+						}
+					}
+				}
+			}
+		}
+	}
+	return -1
 }
 
 func findDistinctMolecules(rMap map[string][]string, m string) int {
@@ -73,6 +115,37 @@ func findDistinctMolecules(rMap map[string][]string, m string) int {
 		}
 	}
 	return len(dMap)
+}
+
+func findNumOfSteps(rep string, rMap map[string][]string, med string) int {
+	steps := 0
+	for rep != med {
+		for i := 0; i < len(rep); i++ {
+			singleChar := string(rep[i])
+			if _, ok := rMap[singleChar]; ok {
+				for _, v := range rMap[singleChar] {
+					rep := rep[0:i]
+					rep += v
+					rep += rep[i+1:]
+					steps++
+				}
+			}
+			if i < len(rep)-1 {
+				dubChar := string(rep[i]) + string(rep[i+1])
+				if _, ok := rMap[dubChar]; ok {
+					for _, v := range rMap[dubChar] {
+						rep := rep[0:i]
+						rep += v
+						if i < len(rep)-2 {
+							rep += rep[i+2:]
+						}
+						steps++
+					}
+				}
+			}
+		}
+	}
+	return steps
 }
 
 func createFileScanner() *bufio.Scanner {
