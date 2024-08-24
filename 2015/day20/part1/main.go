@@ -43,22 +43,12 @@ import (
 //
 // What is the lowest house number of the house to get
 // at least as many presents as the number in your puzzle input?
-func main() {
-	input := 1612317
-	mpHousePresents := findHouseToPresentsMap(input)
-	// mpHousePresents = findHouseToPresentsMapAgain(input) // input as starting point
-	// fmt.Printf("mp: %v \n", mpHousePresents)
-	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).houseMp, input)
-	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
-	fmt.Printf("Presents: %v \n", presents)
-}
+var wg sync.WaitGroup
 
 type Pair struct {
 	p1 int
 	p2 int
 }
-
-var wg sync.WaitGroup
 
 type MP struct {
 	houseMp     map[int]int
@@ -66,34 +56,25 @@ type MP struct {
 	mu          sync.Mutex
 }
 
-func findHouseToPresentsMapAgain(start, num int, mp *MP) *MP {
-	for i := start; i <= num; i++ {
-		if i > 1612317 {
-			fmt.Printf("Curr Num: %v \n", i)
-		}
-		wg.Add(1)
-		go calculateAndMultiply(num, i, mp)
-	}
-	wg.Done()
-	return mp
+func main() {
+	input := 29000000
+	mpHousePresents := createHouseToPresentsMap(input)
+	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).houseMp, input)
+	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
+	fmt.Printf("Presents: %v \n", presents)
 }
 
-func findHouseToPresentsMap(num int) *MP {
+func createHouseToPresentsMap(num int) *MP {
 	mp := &MP{
 		houseMp:     make(map[int]int),
 		multiplesMp: make(map[Pair]int),
 	}
 	for i := 1; i <= num; i++ {
-		if i > 1600000 {
-			fmt.Printf("Curr Num: %v \n", i)
-		}
 		wg.Add(1)
 		go calculateAndMultiply(num, i, mp)
 	}
-
-	wg.Done()
-	start := 1600000 + 1
-	return findHouseToPresentsMapAgain(start, 29000000, mp)
+	wg.Wait()
+	return mp
 }
 
 func calculateAndMultiply(num, i int, mp *MP) {
@@ -101,13 +82,14 @@ func calculateAndMultiply(num, i int, mp *MP) {
 	for j := i; j <= num; j++ {
 		if j%i == 0 {
 			p := Pair{p1: i, p2: 10}
-			(*mp).mu.Lock()
-			if _, ok := (*mp).multiplesMp[p]; ok {
-				(*mp).houseMp[j] += (*mp).multiplesMp[p]
+			mp.mu.Lock()
+			if val, ok := mp.multiplesMp[p]; ok {
+				mp.houseMp[j] += val
 				continue
 			}
-			(*mp).multiplesMp[p] = i * 10
-			(*mp).mu.Unlock()
+			mp.multiplesMp[p] = i * 10
+			mp.houseMp[j] += mp.multiplesMp[p]
+			mp.mu.Unlock()
 		}
 	}
 }
@@ -115,7 +97,7 @@ func calculateAndMultiply(num, i int, mp *MP) {
 func findLowestHouseNum(mp map[int]int, input int) (int, int) {
 	houseNum, numOfPresents := 1, 0
 	for currHouseNum, presents := range mp {
-		if presents == input {
+		if presents >= input {
 			if currHouseNum < houseNum {
 				houseNum = currHouseNum
 				numOfPresents = presents
