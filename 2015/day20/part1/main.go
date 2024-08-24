@@ -44,8 +44,9 @@ import (
 // What is the lowest house number of the house to get
 // at least as many presents as the number in your puzzle input?
 func main() {
-	input := 2900000
+	input := 1612317
 	mpHousePresents := findHouseToPresentsMap(input)
+	// mpHousePresents = findHouseToPresentsMapAgain(input) // input as starting point
 	// fmt.Printf("mp: %v \n", mpHousePresents)
 	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).houseMp, input)
 	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
@@ -65,12 +66,8 @@ type MP struct {
 	mu          sync.Mutex
 }
 
-func findHouseToPresentsMap(num int) *MP {
-	mp := &MP{
-		houseMp:     make(map[int]int),
-		multiplesMp: make(map[Pair]int),
-	}
-	for i := 1; i <= num; i++ {
+func findHouseToPresentsMapAgain(start, num int, mp *MP) *MP {
+	for i := start; i <= num; i++ {
 		if i > 1612317 {
 			fmt.Printf("Curr Num: %v \n", i)
 		}
@@ -79,6 +76,24 @@ func findHouseToPresentsMap(num int) *MP {
 	}
 	wg.Done()
 	return mp
+}
+
+func findHouseToPresentsMap(num int) *MP {
+	mp := &MP{
+		houseMp:     make(map[int]int),
+		multiplesMp: make(map[Pair]int),
+	}
+	for i := 1; i <= num; i++ {
+		if i > 1600000 {
+			fmt.Printf("Curr Num: %v \n", i)
+		}
+		wg.Add(1)
+		go calculateAndMultiply(num, i, mp)
+	}
+
+	wg.Done()
+	start := 1600000 + 1
+	return findHouseToPresentsMapAgain(start, 29000000, mp)
 }
 
 func calculateAndMultiply(num, i int, mp *MP) {
