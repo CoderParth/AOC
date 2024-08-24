@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"sync"
+)
+
 // --- Day 20: Infinite Elves and Infinite Houses ---
 // To keep the Elves busy, Santa has them deliver
 // some presents by hand, door-to-door. He sends
@@ -39,4 +44,74 @@ package main
 // What is the lowest house number of the house to get
 // at least as many presents as the number in your puzzle input?
 func main() {
+	input := 2900000
+	mpHousePresents := findHouseToPresentsMap(input)
+	fmt.Printf("mp: %v \n", mpHousePresents)
+	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).mp, input)
+	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
+	fmt.Printf("Presents: %v \n", presents)
+}
+
+type Pair struct {
+	p1 int
+	p2 int
+}
+
+var wg sync.WaitGroup
+
+type HouseMap struct {
+	mp map[int]int
+	mu sync.Mutex
+}
+type Multiples struct {
+	mp map[Pair]int
+	mu sync.Mutex
+}
+
+func findHouseToPresentsMap(num int) *HouseMap {
+	mp := &HouseMap{
+		mp: make(map[int]int),
+	}
+	multiples := &Multiples{
+		mp: make(map[Pair]int),
+	}
+
+	for i := 1; i <= num; i++ {
+		fmt.Printf("Curr Num: %v \n", i)
+		wg.Add(1)
+		go calculateAndMultiply(num, i, mp, multiples)
+	}
+	return mp
+}
+
+func calculateAndMultiply(num, i int, hMap *HouseMap, multiples *Multiples) {
+	defer wg.Done()
+	for j := i; j <= num; j++ {
+		if j%i == 0 {
+			p := Pair{p1: i, p2: 10}
+			(*multiples).mu.Lock()
+			(*hMap).mu.Lock()
+			if _, ok := (*multiples).mp[p]; ok {
+				(*hMap).mp[j] += (*multiples).mp[p]
+				continue
+			}
+			(*multiples).mp[p] = i * 10
+			(*multiples).mu.Unlock()
+			(*hMap).mu.Unlock()
+
+		}
+	}
+}
+
+func findLowestHouseNum(mp map[int]int, input int) (int, int) {
+	houseNum, numOfPresents := 1, 0
+	for currHouseNum, presents := range mp {
+		if presents == input {
+			if currHouseNum < houseNum {
+				houseNum = currHouseNum
+				numOfPresents = presents
+			}
+		}
+	}
+	return houseNum, numOfPresents
 }
