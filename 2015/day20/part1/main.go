@@ -46,7 +46,7 @@ import (
 func main() {
 	input := 2900000
 	mpHousePresents := findHouseToPresentsMap(input)
-	fmt.Printf("mp: %v \n", mpHousePresents)
+	// fmt.Printf("mp: %v \n", mpHousePresents)
 	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).mp, input)
 	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
 	fmt.Printf("Presents: %v \n", presents)
@@ -75,12 +75,12 @@ func findHouseToPresentsMap(num int) *HouseMap {
 	multiples := &Multiples{
 		mp: make(map[Pair]int),
 	}
-
 	for i := 1; i <= num; i++ {
 		fmt.Printf("Curr Num: %v \n", i)
 		wg.Add(1)
 		go calculateAndMultiply(num, i, mp, multiples)
 	}
+	wg.Done()
 	return mp
 }
 
