@@ -47,7 +47,7 @@ func main() {
 	input := 2900000
 	mpHousePresents := findHouseToPresentsMap(input)
 	// fmt.Printf("mp: %v \n", mpHousePresents)
-	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).mp, input)
+	lowestHouseNum, presents := findLowestHouseNum((*mpHousePresents).houseMp, input)
 	fmt.Printf("Lowest house number: %v \n", lowestHouseNum)
 	fmt.Printf("Presents: %v \n", presents)
 }
@@ -59,46 +59,40 @@ type Pair struct {
 
 var wg sync.WaitGroup
 
-type HouseMap struct {
-	mp map[int]int
-	mu sync.Mutex
-}
-type Multiples struct {
-	mp map[Pair]int
-	mu sync.Mutex
+type MP struct {
+	houseMp     map[int]int
+	multiplesMp map[Pair]int
+	mu          sync.Mutex
 }
 
-func findHouseToPresentsMap(num int) *HouseMap {
-	mp := &HouseMap{
-		mp: make(map[int]int),
-	}
-	multiples := &Multiples{
-		mp: make(map[Pair]int),
+func findHouseToPresentsMap(num int) *MP {
+	mp := &MP{
+		houseMp:     make(map[int]int),
+		multiplesMp: make(map[Pair]int),
 	}
 	for i := 1; i <= num; i++ {
-		fmt.Printf("Curr Num: %v \n", i)
+		if i > 1612317 {
+			fmt.Printf("Curr Num: %v \n", i)
+		}
 		wg.Add(1)
-		go calculateAndMultiply(num, i, mp, multiples)
+		go calculateAndMultiply(num, i, mp)
 	}
 	wg.Done()
 	return mp
 }
 
-func calculateAndMultiply(num, i int, hMap *HouseMap, multiples *Multiples) {
+func calculateAndMultiply(num, i int, mp *MP) {
 	defer wg.Done()
 	for j := i; j <= num; j++ {
 		if j%i == 0 {
 			p := Pair{p1: i, p2: 10}
-			(*multiples).mu.Lock()
-			(*hMap).mu.Lock()
-			if _, ok := (*multiples).mp[p]; ok {
-				(*hMap).mp[j] += (*multiples).mp[p]
+			(*mp).mu.Lock()
+			if _, ok := (*mp).multiplesMp[p]; ok {
+				(*mp).houseMp[j] += (*mp).multiplesMp[p]
 				continue
 			}
-			(*multiples).mp[p] = i * 10
-			(*multiples).mu.Unlock()
-			(*hMap).mu.Unlock()
-
+			(*mp).multiplesMp[p] = i * 10
+			(*mp).mu.Unlock()
 		}
 	}
 }
