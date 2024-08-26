@@ -67,5 +67,46 @@ package main
 //
 // You have 100 hit points. The boss's actual stats are in your puzzle
 // input. What is the least amount of gold you can spend and still win the fight?
+
+type Attacker struct {
+	hitPoints int
+	damage    int
+	armor     int
+}
+
 func main() {
+	weapons := initilaizeWeapons()
+	armor := initializeArmor()
+	rings := initializeRings()
+}
+
+func initilaizeWeapons() [][]int {
+	arr := [][]int{}
+	arr = append(arr, []int{8, 4, 0})
+	arr = append(arr, []int{10, 5, 0})
+	arr = append(arr, []int{25, 6, 0})
+	arr = append(arr, []int{40, 7, 0})
+	arr = append(arr, []int{74, 8, 0})
+	return arr
+}
+
+func initializeArmor() [][]int {
+	arr := [][]int{}
+	arr = append(arr, []int{13, 0, 1})
+	arr = append(arr, []int{31, 0, 2})
+	arr = append(arr, []int{53, 0, 3})
+	arr = append(arr, []int{75, 0, 4})
+	arr = append(arr, []int{102, 0, 5})
+	return arr
+}
+
+func initializeRings() [][]int {
+	arr := [][]int{}
+	arr = append(arr, []int{25, 1, 0})
+	arr = append(arr, []int{50, 2, 0})
+	arr = append(arr, []int{100, 3, 0})
+	arr = append(arr, []int{20, 0, 1})
+	arr = append(arr, []int{40, 0, 2})
+	arr = append(arr, []int{80, 0, 3})
+	return arr
 }
