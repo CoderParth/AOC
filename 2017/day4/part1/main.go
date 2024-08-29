@@ -25,7 +25,9 @@ func main() {
 	totalValid := 0
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
-		if isCurrLineValid(fileScanner.Text()) {
+		wordsMap := createWordsMap(fileScanner.Text())
+		fmt.Printf("words map: %v \n", wordsMap)
+		if isCurrLineValid(wordsMap) {
 			totalValid++
 		}
 	}
@@ -40,4 +42,39 @@ func createFileScanner() *bufio.Scanner {
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 	return fileScanner
+}
+
+func createWordsMap(line string) map[string]int {
+	wordsMap := make(map[string]int)
+	n := len(line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == " " {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[j]) == " " {
+				wordsMap[curr]++
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				wordsMap[curr]++
+				i = j
+				break
+			}
+			curr += string(line[j])
+		}
+	}
+	return wordsMap
+}
+
+func isCurrLineValid(wordsMap map[string]int) bool {
+	for _, wordCount := range wordsMap {
+		if wordCount > 1 {
+			return false
+		}
+	}
+	return true
 }
