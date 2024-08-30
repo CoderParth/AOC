@@ -54,13 +54,13 @@ import "fmt"
 // is produced that has been seen before?
 
 func main() {
-	input := [4]int{0, 2, 7, 0}
+	input := [16]int{4, 10, 4, 1, 8, 4, 9, 14, 5, 1, 14, 15, 0, 15, 3, 5}
 	numOfCycles := findNumOfCycles(&input)
 	fmt.Printf("Num Of cycles: %v \n", numOfCycles)
 }
 
-func findNumOfCycles(input *[4]int) int {
-	set := make(map[[4]int]int)
+func findNumOfCycles(input *[16]int) int {
+	set := make(map[[16]int]int)
 	numOfCycles := 0
 	for {
 		largestNum, idx := findLargestNum(input)
@@ -74,16 +74,16 @@ func findNumOfCycles(input *[4]int) int {
 	return numOfCycles
 }
 
-func hasSeen(input *[4]int, set map[[4]int]int) bool {
+func hasSeen(input *[16]int, set map[[16]int]int) bool {
 	if _, ok := set[*input]; ok {
 		return true
 	}
 	return false
 }
 
-func findLargestNum(input *[4]int) (int, int) {
+func findLargestNum(input *[16]int) (int, int) {
 	largestNum, idx := (*input)[0], 0
-	for i := 1; i < 4; i++ {
+	for i := 1; i < 16; i++ {
 		if input[i] > largestNum {
 			largestNum = (*input)[i]
 			idx = i
@@ -92,11 +92,11 @@ func findLargestNum(input *[4]int) (int, int) {
 	return largestNum, idx
 }
 
-func redistribute(input *[4]int, largestNum, idx int) {
-	remainder := largestNum % 3
+func redistribute(input *[16]int, largestNum, idx int) {
+	remainder := largestNum % 15
 	d := largestNum - remainder
-	s := d / 3
-	for i := 0; i < len(*input); i++ {
+	s := d / 15
+	for i := 0; i < 16; i++ {
 		if i == idx {
 			(*input)[i] = remainder
 			continue
