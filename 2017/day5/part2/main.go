@@ -21,6 +21,7 @@ func main() {
 	fileScanner := createFileScanner()
 	arr := createArrayFromInput(fileScanner)
 	numOfSteps := findNumOfSteps(arr)
+	fmt.Printf("Arr: %v \n", arr)
 	fmt.Printf("Num Of Steps: %v \n", numOfSteps)
 }
 
@@ -57,6 +58,11 @@ func findNumOfSteps(arr []int) int {
 	for currIdx < n {
 		tmpIdx := currIdx
 		currIdx += arr[currIdx]
+		if arr[tmpIdx] >= 3 {
+			arr[tmpIdx]--
+			steps++
+			continue
+		}
 		arr[tmpIdx]++
 		steps++
 	}
