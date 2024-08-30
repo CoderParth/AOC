@@ -28,9 +28,8 @@ func main() {
 	totalValid := 0
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
-		wordsMap := createWordsMap(fileScanner.Text())
-		fmt.Printf("words map: %v \n", wordsMap)
-		if isCurrLineValid(wordsMap) {
+		wordsArr := createWordsArr(fileScanner.Text())
+		if isValidPassphrase(wordsArr) {
 			totalValid++
 		}
 	}
@@ -47,8 +46,8 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func createWordsMap(line string) map[string]int {
-	wordsMap := make(map[string]int)
+func createWordsArr(line string) []string {
+	wordsArr := []string{}
 	n := len(line)
 	for i := 0; i < n; i++ {
 		if string(line[i]) == " " {
@@ -57,25 +56,46 @@ func createWordsMap(line string) map[string]int {
 		curr := ""
 		for j := i; j < n; j++ {
 			if string(line[j]) == " " {
-				wordsMap[curr]++
+				wordsArr = append(wordsArr, curr)
 				i = j
 				break
 			}
 			if j == n-1 {
 				curr += string(line[j])
-				wordsMap[curr]++
+				wordsArr = append(wordsArr, curr)
 				i = j
 				break
 			}
 			curr += string(line[j])
 		}
 	}
-	return wordsMap
+	return wordsArr
 }
 
-func isCurrLineValid(wordsMap map[string]int) bool {
-	for _, wordCount := range wordsMap {
-		if wordCount > 1 {
+func isValidPassphrase(wordsArr []string) bool {
+	n := len(wordsArr)
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			if areAnagrams(wordsArr[i], wordsArr[j]) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func areAnagrams(word1, word2 string) bool {
+	m, n := len(word1), len(word2)
+	if m != n {
+		return false
+	}
+	map1, map2 := make(map[rune]int), make(map[rune]int)
+	for i := 0; i < m; i++ {
+		map1[rune(word1[i])]++
+		map2[rune(word2[i])]++
+	}
+	for k1, v1 := range map1 {
+		if v1 != map2[k1] {
 			return false
 		}
 	}
