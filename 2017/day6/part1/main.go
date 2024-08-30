@@ -55,10 +55,52 @@ import "fmt"
 
 func main() {
 	input := [4]int{0, 2, 7, 0}
-	numOfCycles := findNumOfCycles(input)
+	numOfCycles := findNumOfCycles(&input)
 	fmt.Printf("Num Of cycles: %v \n", numOfCycles)
 }
 
-func findNumOfCycles(input [4]int) int {
+func findNumOfCycles(input *[4]int) int {
 	set := make(map[[4]int]int)
+	numOfCycles := 0
+	for {
+		largestNum, idx := findLargestNum(input)
+		redistribute(input, largestNum, idx)
+		if hasSeen(input, set) {
+			break
+		}
+		set[*input] = 0
+		numOfCycles++
+	}
+	return numOfCycles
+}
+
+func hasSeen(input *[4]int, set map[[4]int]int) bool {
+	if _, ok := set[*input]; ok {
+		return true
+	}
+	return false
+}
+
+func findLargestNum(input *[4]int) (int, int) {
+	largestNum, idx := (*input)[0], 0
+	for i := 1; i < 4; i++ {
+		if input[i] > largestNum {
+			largestNum = (*input)[i]
+			idx = i
+		}
+	}
+	return largestNum, idx
+}
+
+func redistribute(input *[4]int, largestNum, idx int) {
+	remainder := largestNum % 3
+	d := largestNum - remainder
+	s := d / 3
+	for i := 0; i < len(*input); i++ {
+		if i == idx {
+			(*input)[i] = remainder
+			continue
+		}
+		(*input)[i] += s
+	}
 }
