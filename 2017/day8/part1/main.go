@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
+	"strconv"
 )
 
 // --- Day 8: I Heard You Like Registers ---
@@ -39,8 +41,9 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	arrOfInput, mpOfRegisters := parseInput(fileScanner)
-	fmt.Printf("arr: %v \n", arrOfInput)
-	fmt.Printf("MP : %v \n", mpOfRegisters)
+	followConditions(arrOfInput, &mpOfRegisters)
+	largest := findLargestRegister(mpOfRegisters)
+	fmt.Printf("Largest: %v \n", largest)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -89,4 +92,61 @@ func parseCurrLine(line string) []string {
 		}
 	}
 	return arr
+}
+
+func followConditions(arrOfInput [][]string, mpOfRegisters *map[string]int) {
+	n := len(arrOfInput)
+	for i := 0; i < n; i++ {
+		firstRegister := arrOfInput[i][0]
+		incOrDec := arrOfInput[i][1]
+		value := convStrToInt(arrOfInput[i][2])
+		secondRegister := arrOfInput[i][4]
+		condition := arrOfInput[i][5]
+		conditionVal := convStrToInt(arrOfInput[i][6])
+		if conditionMatch(secondRegister, condition, conditionVal, mpOfRegisters) {
+			if incOrDec == "inc" {
+				(*mpOfRegisters)[firstRegister] += value
+			}
+			if incOrDec == "dec" {
+				(*mpOfRegisters)[firstRegister] -= value
+			}
+		}
+	}
+}
+
+func convStrToInt(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
+}
+
+func conditionMatch(register string, condition string, conditionalVal int, mpOfRegisters *map[string]int) bool {
+	regValue := (*mpOfRegisters)[register]
+	switch condition {
+	case ">":
+		return regValue > conditionalVal
+	case "<":
+		return regValue < conditionalVal
+	case ">=":
+		return regValue >= conditionalVal
+	case "<=":
+		return regValue <= conditionalVal
+	case "==":
+		return regValue == conditionalVal
+	case "!=":
+		return regValue != conditionalVal
+	}
+	return false
+}
+
+func findLargestRegister(mp map[string]int) int {
+	largest := math.MinInt
+	for _, v := range mp {
+		if v > largest {
+			largest = v
+		}
+	}
+	return largest
 }
