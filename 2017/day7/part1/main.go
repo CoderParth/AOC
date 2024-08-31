@@ -81,12 +81,14 @@ type Disc struct {
 
 func main() {
 	fileScanner := createFileScanner()
-	mp := make(map[Disc][]string) // map of the discs and their sub-towers
+	mp := make(map[string][]string) // map of the discs and their sub-towers
 	for fileScanner.Scan() {
 		disc, subTowers := parseInput(fileScanner.Text())
 		mp[disc] = subTowers
 	}
 	fmt.Printf("Map of discs: %v \n", mp)
+	bottomDisc := findBottomDisc(mp)
+	fmt.Printf("Bottom Disc %v \n", bottomDisc)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -99,7 +101,7 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func parseInput(line string) (Disc, []string) {
+func parseInput(line string) (string, []string) {
 	n, idx := len(line), 0
 	name := ""
 	// parse name
@@ -142,9 +144,29 @@ func parseInput(line string) (Disc, []string) {
 			curr += string(line[j])
 		}
 	}
-	d := Disc{
-		name,
-		weight,
+	return name, subTowers
+}
+
+func findBottomDisc(mp map[string][]string) string {
+	for disc := range mp {
+		visited := make(map[string]int)
+		searchRecusively(disc, mp, &visited)
+		if len(visited) == len(mp) {
+			return disc
+		}
 	}
-	return d, subTowers
+	return "Not found"
+}
+
+func searchRecusively(disc string, mp map[string][]string, visited *map[string]int) {
+	if _, ok := (*visited)[disc]; ok {
+		return
+	}
+	(*visited)[disc] = 0
+	for _, subTower := range mp[disc] {
+		fmt.Printf("Sub Tower: %v \n", subTower)
+		if _, ok := (*visited)[subTower]; !ok {
+			searchRecusively(subTower, mp, visited)
+		}
+	}
 }
