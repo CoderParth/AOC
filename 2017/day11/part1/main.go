@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
 
 // --- Day 11: Hex Ed ---
 // Crossing the bridge, you've barely reached the other side of the stream
@@ -58,14 +63,53 @@ func main() {
 
 func findNumOfStepsAway() int {
 	hexes := getHexesFromInput()
+	fmt.Printf("Hexes: %v \n", hexes)
+	return 0
 }
 
-func getHexesFromInput() string {
+func getHexesFromInput() []string {
 	fileScanner := createFileScanner()
 	for fileScanner.Scan() {
-		return fileScanner.Text()
+		line := fileScanner.Text()
+		arr := createArr(line)
+		return arr
 	}
-	return ""
+	return []string{}
 }
 
-func createFileScanner()
+func createArr(line string) []string {
+	arr := []string{}
+	n := len(line)
+	fmt.Printf("Curr Line: %v\n", line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == "," {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[j]) == "," {
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			curr += string(line[j])
+		}
+	}
+	return arr
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
