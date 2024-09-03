@@ -63,8 +63,43 @@ func main() {
 
 func findNumOfStepsAway() int {
 	hexes := getHexesFromInput()
-	fmt.Printf("Hexes: %v \n", hexes)
-	return 0
+	x, y, z := 0, 0, 0
+	for _, hex := range hexes {
+		switch hex {
+		case "n":
+			y++
+			z--
+		case "ne":
+			x++
+			z--
+		case "se":
+			x++
+			y--
+		case "s":
+			y--
+			z++
+		case "sw":
+			x--
+			z++
+		case "nw":
+			x--
+			y++
+		}
+	}
+	distance := calculateDistance(x, y, z)
+	return distance
+}
+
+func calculateDistance(x, y, z int) int {
+	d := (abs(x) + abs(y) + abs(z)) / 2
+	return d
+}
+
+func abs(i int) int {
+	if i < 0 {
+		return -i
+	}
+	return i
 }
 
 func getHexesFromInput() []string {
@@ -80,7 +115,6 @@ func getHexesFromInput() []string {
 func createArr(line string) []string {
 	arr := []string{}
 	n := len(line)
-	fmt.Printf("Curr Line: %v\n", line)
 	for i := 0; i < n; i++ {
 		if string(line[i]) == "," {
 			continue
