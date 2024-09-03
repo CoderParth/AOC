@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // --- Day 11: Hex Ed ---
 // Crossing the bridge, you've barely reached the other side of the stream
 // when a program comes up to you, clearly in distress. "It's my
@@ -35,7 +37,7 @@ package main
 // ne,ne,ne is 3 steps away.
 // ne,ne,sw,sw is 0 steps away (back where you started).
 // ne,ne,s,s is 2 steps away (se,se).
-// se,sw,se,sw,sw is 3 steps away (s,s,sw).
+// se,sw,se,sw,sw is 3 `steps away (s,s,sw).
 
 // •  North (n):
 // (x,y,z)→(x,y+1,z−1)
@@ -50,4 +52,20 @@ package main
 // •  Northwest (nw):
 // (x,y,z)→(x−1,y+1,z)
 func main() {
+	stepsAway := findNumOfStepsAway()
+	fmt.Printf("Steps Away: %v \n", stepsAway)
 }
+
+func findNumOfStepsAway() int {
+	hexes := getHexesFromInput()
+}
+
+func getHexesFromInput() string {
+	fileScanner := createFileScanner()
+	for fileScanner.Scan() {
+		return fileScanner.Text()
+	}
+	return ""
+}
+
+func createFileScanner()
