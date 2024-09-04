@@ -66,8 +66,32 @@ func findConnectedPrograms() int {
 		programsMap[currProgram] = programsInGroup
 	}
 	fmt.Printf("Maps: %v \n", programsMap)
-	total := findConnectonsToZero(programsMap)
+	total := findConnectionsToZero(programsMap)
 	return total
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func findCurrProgram(line string) (string, int) {
+	n := len(line)
+	for i := 0; i < n; i++ {
+		curr := ""
+		for j := 0; j < n; j++ {
+			if string(line[j]) == " " {
+				return curr, j
+			}
+			curr += string(line[j])
+		}
+	}
+	return "", 0
 }
 
 func findProgramsInGroup(line string, idx int) []string {
@@ -97,26 +121,31 @@ func findProgramsInGroup(line string, idx int) []string {
 	return group
 }
 
-func findCurrProgram(line string) (string, int) {
-	n := len(line)
-	for i := 0; i < n; i++ {
-		curr := ""
-		for j := 0; j < n; j++ {
-			if string(line[j]) == " " {
-				return curr, j
-			}
-			curr += string(line[j])
+func findConnectionsToZero(programsMap map[string][]string) int {
+	total := 0
+	for program := range programsMap {
+		visited := make(map[string]int)
+		hasZero := false
+		dfs(program, programsMap, &visited, &hasZero)
+		if hasZero {
+			total++
 		}
 	}
-	return "", 0
+	return total
 }
 
-func createFileScanner() *bufio.Scanner {
-	readFile, err := os.Open("input.txt")
-	if err != nil {
-		log.Fatal(err)
+func dfs(program string, programsMap map[string][]string, visited *map[string]int, hasZero *bool) {
+	if program == "0" {
+		(*hasZero) = true
+		return
 	}
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-	return fileScanner
+	if _, ok := (*visited)[program]; ok {
+		return
+	}
+	(*visited)[program] = 0
+	for _, groupProgam := range programsMap[program] {
+		if _, ok := (*visited)[groupProgam]; !ok {
+			dfs(groupProgam, programsMap, visited, hasZero)
+		}
+	}
 }
