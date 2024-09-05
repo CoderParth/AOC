@@ -71,42 +71,36 @@ func createFileScanner() *bufio.Scanner {
 
 func findRemainingUnits(input string) int {
 	fmt.Printf("Starting input: %v \n", input)
-	for hasReactors(input) {
-		input = breakReactors(input)
+	for {
+		idx, ok := checkForReactors(input)
+		if !ok {
+			break
+		}
+		input = breakReactors(input, idx)
 	}
 	return len(input)
 }
 
-func hasReactors(input string) bool {
+func checkForReactors(input string) (int, bool) {
 	n := len(input)
 	for i := 0; i < n-1; i++ {
+		if string(input[i]) == string(input[i+1]) {
+			continue
+		}
 		if strings.ToUpper(string(input[i])) == string(input[i+1]) {
-			return true
+			return i, true
 		}
 		if strings.ToUpper(string(input[i+1])) == string(input[i]) {
-			return true
+			return i, true
 		}
 	}
-	return false
+	return 0, false
 }
 
-func breakReactors(input string) string {
-	n := len(input)
-	i, j := findReactorIdxs(input, n)
+func breakReactors(input string, i int) string {
 	tmp := input
+	n := len(tmp)
 	input = tmp[0:i]
-	input += tmp[j+1 : n]
+	input += tmp[i+2 : n]
 	return input
-}
-
-func findReactorIdxs(input string, n int) (int, int) {
-	for i := 0; i < n-1; i++ {
-		if strings.ToUpper(string(input[i])) == string(input[i+1]) {
-			return i, i + 1
-		}
-		if strings.ToUpper(string(input[i+1])) == string(input[i]) {
-			return i, i + 1
-		}
-	}
-	return 0, 0
 }
