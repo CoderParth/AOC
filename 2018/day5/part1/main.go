@@ -47,7 +47,6 @@ import (
 func main() {
 	input := parseInput()
 	remainingUnits := findRemainingUnits(input)
-	fmt.Printf("Input: %v \n", input)
 	fmt.Printf("Number of remaining units: %v \n", remainingUnits)
 }
 
@@ -71,6 +70,7 @@ func createFileScanner() *bufio.Scanner {
 }
 
 func findRemainingUnits(input string) int {
+	fmt.Printf("Starting input: %v \n", input)
 	for hasReactors(input) {
 		input = breakReactors(input)
 	}
@@ -91,16 +91,15 @@ func hasReactors(input string) bool {
 }
 
 func breakReactors(input string) string {
-	i, j := findReactorIdxs(input)
 	n := len(input)
+	i, j := findReactorIdxs(input, n)
 	tmp := input
 	input = tmp[0:i]
 	input += tmp[j+1 : n]
 	return input
 }
 
-func findReactorIdxs(input string) (int, int) {
-	n := len(input)
+func findReactorIdxs(input string, n int) (int, int) {
 	for i := 0; i < n-1; i++ {
 		if strings.ToUpper(string(input[i])) == string(input[i+1]) {
 			return i, i + 1
