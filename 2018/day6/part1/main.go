@@ -89,8 +89,8 @@ func main() {
 }
 
 type Pair struct {
-	c1 int
-	c2 int
+	row int
+	col int
 }
 
 func findLargestArea(grid [][][3]int) int {
@@ -102,11 +102,11 @@ func findLargestArea(grid [][][3]int) int {
 			if grid[i][j][0] == -2 {
 				continue
 			}
-			c1 := grid[i][j][1]
-			c2 := grid[i][j][2]
+			row := grid[i][j][1]
+			col := grid[i][j][2]
 			p := Pair{
-				c1,
-				c2,
+				row,
+				col,
 			}
 			mp[p]++
 		}
@@ -129,18 +129,20 @@ func calculateDistanceAndMarkCord(grid *[][][3]int, input [][]int) {
 		currRow, currCol := input[i][0], input[i][1]
 		for x := 0; x < gridRowLen; x++ {
 			for y := 0; y < gridColLen; y++ {
-				if ((*grid)[x][y][0]) == -1 || (*grid)[x][y][0] == -2 {
+				if (*grid)[x][y][0] == -2 {
 					continue
 				}
 				currDist := findManhattanDist(currRow, currCol, x, y)
-				if currDist == (*grid)[x][y][0] {
-					(*grid)[x][y][0] = -2
-				}
 				if currDist < (*grid)[x][y][0] {
 					(*grid)[x][y][0] = currDist
 					(*grid)[x][y][1] = currRow
 					(*grid)[x][y][2] = currCol
+					continue
 				}
+				if currDist == (*grid)[x][y][0] {
+					(*grid)[x][y][0] = -2
+				}
+
 			}
 		}
 	}
@@ -160,11 +162,11 @@ func abs(i int) int {
 
 func initializeGrid(largestRow, largestCol int, input [][]int) [][][3]int {
 	grid := make([][][3]int, largestRow+1)
-	for i := 0; i < largestRow+1; i++ {
+	for i := 0; i <= largestRow; i++ {
 		grid[i] = make([][3]int, largestCol+1)
 	}
-	for i := 0; i < largestRow+1; i++ {
-		for j := 0; j < largestCol+1; j++ {
+	for i := 0; i <= largestRow; i++ {
+		for j := 0; j <= largestCol; j++ {
 			grid[i][j][0] = math.MaxInt
 		}
 	}
@@ -173,9 +175,11 @@ func initializeGrid(largestRow, largestCol int, input [][]int) [][][3]int {
 		currRow, currCol := input[i][0], input[i][1]
 		(grid)[currRow][currCol][0] = -1
 		(grid)[currRow][currCol][1] = currRow
-		(grid)[currRow][currCol][2] = currRow
+		(grid)[currRow][currCol][2] = currCol
 	}
-	fmt.Printf("GRID: %v \n", grid)
+	for _, i := range grid {
+		fmt.Printf("- :%v \n", i)
+	}
 	return grid
 }
 
