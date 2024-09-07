@@ -77,9 +77,9 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
-	largestCol, largestRow := findLargestColAndRow(input)
-	fmt.Printf("Col: %v \n Row: %v \n", largestCol, largestRow)
-	grid := initializeGrid(largestCol, largestRow)
+	largestRow, largestCol := findLargestColAndRow(input)
+	fmt.Printf("Row: %v \n Col: %v \n", largestRow, largestCol)
+	grid := initializeGrid(largestRow, largestCol, input)
 	calculateDistanceAndMarkCord(&grid, input)
 	for _, i := range grid {
 		fmt.Printf("- :%v \n", i)
@@ -99,6 +99,9 @@ func findLargestArea(grid [][][3]int) int {
 	gridColLen := len(grid[0])
 	for i := 0; i < gridRowLen; i++ {
 		for j := 0; j < gridColLen; j++ {
+			if grid[i][j][0] == -2 {
+				continue
+			}
 			c1 := grid[i][j][1]
 			c2 := grid[i][j][2]
 			p := Pair{
@@ -108,7 +111,7 @@ func findLargestArea(grid [][][3]int) int {
 			mp[p]++
 		}
 	}
-
+	fmt.Printf("Map: %v \n", mp)
 	largest := math.MinInt
 	for _, v := range mp {
 		if v > largest {
@@ -123,17 +126,20 @@ func calculateDistanceAndMarkCord(grid *[][][3]int, input [][]int) {
 	gridRowLen := len(*grid)
 	gridColLen := len((*grid)[0])
 	for i := 0; i < m; i++ {
-		currCol, currRow := input[i][0], input[i][1]
+		currRow, currCol := input[i][0], input[i][1]
 		for x := 0; x < gridRowLen; x++ {
 			for y := 0; y < gridColLen; y++ {
-				if x == currRow && y == currCol {
+				if ((*grid)[x][y][0]) == -1 || (*grid)[x][y][0] == -2 {
 					continue
 				}
-				currDist := findManhattanDist(currCol, currRow, x, y)
+				currDist := findManhattanDist(currRow, currCol, x, y)
+				if currDist == (*grid)[x][y][0] {
+					(*grid)[x][y][0] = -2
+				}
 				if currDist < (*grid)[x][y][0] {
 					(*grid)[x][y][0] = currDist
-					(*grid)[x][y][1] = currCol
-					(*grid)[x][y][2] = currRow
+					(*grid)[x][y][1] = currRow
+					(*grid)[x][y][2] = currCol
 				}
 			}
 		}
@@ -152,7 +158,7 @@ func abs(i int) int {
 	return i
 }
 
-func initializeGrid(largestCol, largestRow int) [][][3]int {
+func initializeGrid(largestRow, largestCol int, input [][]int) [][][3]int {
 	grid := make([][][3]int, largestRow+1)
 	for i := 0; i < largestRow+1; i++ {
 		grid[i] = make([][3]int, largestCol+1)
@@ -162,29 +168,37 @@ func initializeGrid(largestCol, largestRow int) [][][3]int {
 			grid[i][j][0] = math.MaxInt
 		}
 	}
+	m := len(input)
+	for i := 0; i < m; i++ {
+		currRow, currCol := input[i][0], input[i][1]
+		(grid)[currRow][currCol][0] = -1
+		(grid)[currRow][currCol][1] = currRow
+		(grid)[currRow][currCol][2] = currRow
+	}
+	fmt.Printf("GRID: %v \n", grid)
 	return grid
 }
 
 func findLargestColAndRow(input [][]int) (int, int) {
-	largestCol, largestRow := math.MinInt, math.MinInt
+	largestRow, largestCol := math.MinInt, math.MinInt
 	n := len(input)
 	for i := 0; i < n; i++ {
-		if input[i][0] > largestCol {
-			largestCol = input[i][0]
+		if input[i][0] > largestRow {
+			largestRow = input[i][0]
 		}
-		if input[i][1] > largestRow {
-			largestRow = input[i][1]
+		if input[i][1] > largestCol {
+			largestCol = input[i][1]
 		}
 	}
-	return largestCol, largestRow
+	return largestRow, largestCol
 }
 
 func parseInput(fileScanner *bufio.Scanner) [][]int {
 	rowsAndCols := [][]int{}
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
-		col, row := parse(currLine)
-		rowsAndCols = append(rowsAndCols, []int{col, row})
+		row, col := parse(currLine)
+		rowsAndCols = append(rowsAndCols, []int{row, col})
 	}
 	return rowsAndCols
 }
@@ -213,7 +227,7 @@ func parse(line string) (int, int) {
 		}
 	}
 	col, row := convStrToInt(arr[0]), convStrToInt(arr[1])
-	return col, row
+	return row, col
 }
 
 func convStrToInt(s string) int {
