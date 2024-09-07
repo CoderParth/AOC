@@ -77,9 +77,92 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
-	fmt.Printf("Input: %v \n", input)
 	largestCol, largestRow := findLargestColAndRow(input)
 	fmt.Printf("Col: %v \n Row: %v \n", largestCol, largestRow)
+	grid := initializeGrid(largestCol, largestRow)
+	calculateDistanceAndMarkCord(&grid, input)
+	for _, i := range grid {
+		fmt.Printf("- :%v \n", i)
+	}
+	largestArea := findLargestArea(grid)
+	fmt.Printf("Largest Area: %v \n", largestArea)
+}
+
+type Pair struct {
+	c1 int
+	c2 int
+}
+
+func findLargestArea(grid [][][3]int) int {
+	mp := make(map[Pair]int)
+	gridRowLen := len(grid)
+	gridColLen := len(grid[0])
+	for i := 0; i < gridRowLen; i++ {
+		for j := 0; j < gridColLen; j++ {
+			c1 := grid[i][j][1]
+			c2 := grid[i][j][2]
+			p := Pair{
+				c1,
+				c2,
+			}
+			mp[p]++
+		}
+	}
+
+	largest := math.MinInt
+	for _, v := range mp {
+		if v > largest {
+			largest = v
+		}
+	}
+	return largest
+}
+
+func calculateDistanceAndMarkCord(grid *[][][3]int, input [][]int) {
+	m := len(input)
+	gridRowLen := len(*grid)
+	gridColLen := len((*grid)[0])
+	for i := 0; i < m; i++ {
+		currCol, currRow := input[i][0], input[i][1]
+		for x := 0; x < gridRowLen; x++ {
+			for y := 0; y < gridColLen; y++ {
+				if x == currRow && y == currCol {
+					continue
+				}
+				currDist := findManhattanDist(currCol, currRow, x, y)
+				if currDist < (*grid)[x][y][0] {
+					(*grid)[x][y][0] = currDist
+					(*grid)[x][y][1] = currCol
+					(*grid)[x][y][2] = currRow
+				}
+			}
+		}
+	}
+}
+
+func findManhattanDist(x1, y1, x2, y2 int) int {
+	dist := abs(x1-x2) + abs(y1-y2)
+	return dist
+}
+
+func abs(i int) int {
+	if i < 0 {
+		return -i
+	}
+	return i
+}
+
+func initializeGrid(largestCol, largestRow int) [][][3]int {
+	grid := make([][][3]int, largestRow+1)
+	for i := 0; i < largestRow+1; i++ {
+		grid[i] = make([][3]int, largestCol+1)
+	}
+	for i := 0; i < largestRow+1; i++ {
+		for j := 0; j < largestCol+1; j++ {
+			grid[i][j][0] = math.MaxInt
+		}
+	}
+	return grid
 }
 
 func findLargestColAndRow(input [][]int) (int, int) {
