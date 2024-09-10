@@ -163,10 +163,10 @@ func abs(i int) int {
 func initializeGrid(largestRow, largestCol int, input [][]int) [][][3]int {
 	grid := make([][][3]int, largestRow+1)
 	for i := 0; i <= largestRow; i++ {
-		grid[i] = make([][3]int, largestCol+1)
+		grid[i] = make([][3]int, largestCol+2)
 	}
 	for i := 0; i <= largestRow; i++ {
-		for j := 0; j <= largestCol; j++ {
+		for j := 0; j < largestCol+2; j++ {
 			grid[i][j][0] = math.MaxInt
 		}
 	}
