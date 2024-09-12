@@ -40,7 +40,6 @@ func findTlsSupportingIps() int {
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		input := parseInput(currLine)
-		fmt.Printf("Input: %v \n", input)
 		if supportsTls(input) {
 			total++
 		}
@@ -87,32 +86,28 @@ func parseInput(line string) []string {
 }
 
 func supportsTls(input []string) bool {
+	supports := false
 	for _, seq := range input {
-		fmt.Printf("curr seq: %v \n", seq)
 		if string(seq[0]) == "[" {
 			if hasAbba(seq[1:]) { // for seq inside square brackets
 				return false
 			}
 			continue
 		}
-		if !hasAbba(seq) { // for seq outside square brackets
-			return false
+		if hasAbba(seq) { // for seq outside square brackets
+			supports = true
 		}
 	}
-	fmt.Printf("Returning true")
-	return true
+	return supports
 }
 
 func hasAbba(seq string) bool {
-	fmt.Printf("curr seq: %v \n", seq)
 	n := len(seq)
 	for i := 0; i < n-3; i++ {
 		leftSeq := string(seq[i]) + string(seq[i+1])
 		rightSeq := string(seq[i+2]) + string(seq[i+3])
-		fmt.Printf("left seq: %v \n", leftSeq)
-		fmt.Printf("right seq: %v \n", rightSeq)
 		if leftSeq == rightSeq {
-			return false
+			continue
 		}
 		reversedSeq := string(seq[i+3]) + string(seq[i+2])
 		if leftSeq == reversedSeq {
