@@ -101,18 +101,19 @@ func findValueAtPosZero() int {
 		currLine := fileScanner.Text()
 		input = parseInput(currLine)
 	}
-	fmt.Printf("Input: %v \n", input)
-	input = processProgram(input)
-
-	fmt.Printf("After Processing, input: %v \n", input)
-	return input[0]
+	input[1] = 12
+	input[2] = 2
+	newInput := processProgram(input)
+	return newInput[0]
 }
 
 func processProgram(input []int) []int {
 	n := len(input)
 	for i := 0; i < n-3; i++ {
-		fmt.Printf("curr input: %v \n", input[i])
-		if input[i+1] >= n || input[i+2] >= n {
+		if input[i] == 99 {
+			break
+		}
+		if input[i+1] >= n || input[i+2] >= n || input[i+3] >= n {
 			break
 		}
 		firstInput := input[input[i+1]]
