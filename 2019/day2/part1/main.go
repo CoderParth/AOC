@@ -1,5 +1,13 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
+
 // --- Day 2: 1202 Program Alarm ---
 // On the way to your gravity assist around the Moon, your ship computer
 // beeps angrily about a "1202 program alarm". On the radio, an Elf is
@@ -82,4 +90,88 @@ package main
 // 12 and replace position 2 with the value 2. What value is left at position
 // 0 after the program halts?
 func main() {
+	valueAtPosZero := findValueAtPosZero()
+	fmt.Printf("Value at pos zero after program halts: %v \n", valueAtPosZero)
+}
+
+func findValueAtPosZero() int {
+	fileScanner := createFileScanner()
+	input := []int{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		input = parseInput(currLine)
+	}
+	fmt.Printf("Input: %v \n", input)
+	input = processProgram(input)
+
+	fmt.Printf("After Processing, input: %v \n", input)
+	return input[0]
+}
+
+func processProgram(input []int) []int {
+	n := len(input)
+	for i := 0; i < n-3; i++ {
+		fmt.Printf("curr input: %v \n", input[i])
+		if input[i+1] >= n || input[i+2] >= n {
+			break
+		}
+		firstInput := input[input[i+1]]
+		secondInput := input[input[i+2]]
+		outputPos := input[i+3]
+		switch input[i] {
+		case 1:
+			input[outputPos] = firstInput + secondInput
+			i = i + 3
+		case 2:
+			input[outputPos] = firstInput * secondInput
+			i = i + 3
+		}
+	}
+	return input
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func parseInput(line string) []int {
+	arr := []int{}
+	n := len(line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == "," {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[j]) == "," {
+				num := convStrToInt(curr)
+				arr = append(arr, num)
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				num := convStrToInt(curr)
+				arr = append(arr, num)
+				i = j
+				break
+			}
+			curr += string(line[j])
+		}
+	}
+	return arr
+}
+
+func convStrToInt(curr string) int {
+	num, err := strconv.Atoi(curr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
 }
