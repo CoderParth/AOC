@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 )
@@ -44,6 +45,8 @@ import (
 // Don't count whitespace.
 func main() {
 	fileScanner := createFileScanner()
+	input := parseInput(fileScanner)
+	fmt.Printf("Input: %v \n", input)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -54,4 +57,29 @@ func createFileScanner() *bufio.Scanner {
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 	return fileScanner
+}
+
+func parseInput(fileScanner *bufio.Scanner) []string {
+	input := []string{}
+	line := ""
+	for fileScanner.Scan() {
+		line = fileScanner.Text()
+	}
+	n := len(line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == "(" {
+			curr := ""
+			i++
+			for k := i; k < n; k++ {
+				if string(line[k]) == ")" {
+					input = append(input, curr)
+					i = k + 1
+					break
+				}
+				curr += string(line[k])
+			}
+		}
+		input = append(input, string(line[i]))
+	}
+	return input
 }
