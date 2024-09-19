@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // --- Day 3: Binary Diagnostic ---
@@ -61,6 +63,9 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
+	fmt.Printf("Input: %v \n", input)
+	power := calculatePower(input)
+	fmt.Printf("Power: %v \n", power)
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -73,5 +78,75 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func parseInput(fileScanner *bufio.Scanner) []string {
+func parseInput(fileScanner *bufio.Scanner) [][]string {
+	input := [][]string{}
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		currArr := parse(currLine)
+		input = append(input, currArr)
+	}
+	return input
+}
+
+func parse(line string) []string {
+	n := len(line)
+	arr := []string{}
+	for i := 0; i < n; i++ {
+		arr = append(arr, string(line[i]))
+	}
+	return arr
+}
+
+func calculatePower(input [][]string) int {
+	m, n := len(input), len(input[0])
+	gamma, epsilon := "", ""
+
+	for i := 0; i < n; i++ {
+		freqMap := make(map[string]int)
+		for j := 0; j < m; j++ {
+			freqMap[input[j][i]]++
+		}
+		binaryGamma, binaryEpsilon := analyseBits(freqMap)
+		gamma += binaryGamma
+		epsilon += binaryEpsilon
+	}
+	decimalGamma, decimalEpsilon := convIntoDecimal(gamma), convIntoDecimal(epsilon)
+	return decimalGamma * decimalEpsilon
+}
+
+func analyseBits(freqMap map[string]int) (string, string) {
+	if freqMap["1"] > freqMap["0"] {
+		return "1", "0"
+	}
+	return "0", "1"
+}
+
+func convIntoDecimal(binary string) int {
+	n, remainingLength := len(binary), len(binary)-1
+	decimal := 0
+	for i := 0; i < n; i++ {
+		currBinary := convStrToInt(string(binary[i]))
+		decimal += twoToThePowerOf(remainingLength) * currBinary
+		remainingLength--
+	}
+	return decimal
+}
+
+func convStrToInt(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
+}
+
+func twoToThePowerOf(num int) int {
+	if num == 0 {
+		return 1
+	}
+	res := 1
+	for i := 1; i <= num; i++ {
+		res = 2 * res
+	}
+	return res
 }
