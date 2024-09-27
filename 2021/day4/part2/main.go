@@ -52,7 +52,6 @@ func calculateScore() int {
 	fmt.Printf("random nums: %v \n", randomNums)
 	input, numOfBoards := parseInput(fileScanner)
 	fmt.Printf("Input: %v \n", input)
-	fmt.Printf("Num of boards: %v  \n", numOfBoards)
 	boards := initializeBoards(numOfBoards)
 	score := findWinningBoard(randomNums, &input, boards)
 	return score
@@ -72,6 +71,9 @@ func initializeBoards(numOfBoards int) []Board {
 func findWinningBoard(randomNums []string, input *[][][]Num, boards []Board) int {
 	randomNumsLen := len(randomNums)
 	n := len(*input)
+	lastResult := 0
+	numOfWinners := 0
+	totalBoards := len(boards)
 
 	for i := 0; i < randomNumsLen; i++ {
 		currNum := randomNums[i]
@@ -94,9 +96,15 @@ func findWinningBoard(randomNums []string, input *[][][]Num, boards []Board) int
 					}
 				}
 				if rowsMarked == 5 {
-					remainingSum := sumOfAllUnmarkedNums((*input)[j])
-					currNumAsInt := convStrToInt(currNum)
-					return remainingSum * currNumAsInt
+					if hasWon := boards[j].won; !hasWon {
+						boards[j].won = true
+						numOfWinners++
+						if numOfWinners == totalBoards {
+							remainingSum := sumOfAllUnmarkedNums((*input)[j])
+							currNumAsInt := convStrToInt(currNum)
+							lastResult = remainingSum * currNumAsInt
+						}
+					}
 				}
 			}
 			// check column wise
@@ -108,14 +116,20 @@ func findWinningBoard(randomNums []string, input *[][][]Num, boards []Board) int
 					}
 				}
 				if colsMarked == 5 {
-					remainingSum := sumOfAllUnmarkedNums((*input)[j])
-					currNumAsInt := convStrToInt(currNum)
-					return remainingSum * currNumAsInt
+					if hasWon := boards[j].won; !hasWon {
+						boards[j].won = true
+						numOfWinners++
+						if numOfWinners == totalBoards {
+							remainingSum := sumOfAllUnmarkedNums((*input)[j])
+							currNumAsInt := convStrToInt(currNum)
+							lastResult = remainingSum * currNumAsInt
+						}
+					}
 				}
 			}
 		}
 	}
-	return 0
+	return lastResult
 }
 
 func sumOfAllUnmarkedNums(input [][]Num) int {
