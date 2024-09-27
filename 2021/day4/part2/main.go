@@ -31,6 +31,11 @@ type Num struct {
 	marked bool
 }
 
+type Board struct {
+	boardNum int
+	won      bool
+}
+
 func main() {
 	score := calculateScore()
 	fmt.Printf("Score: %v \n", score)
@@ -45,15 +50,29 @@ func calculateScore() int {
 		break
 	}
 	fmt.Printf("random nums: %v \n", randomNums)
-	input := parseInput(fileScanner)
+	input, numOfBoards := parseInput(fileScanner)
 	fmt.Printf("Input: %v \n", input)
-	score := findWinningBoard(randomNums, &input)
+	fmt.Printf("Num of boards: %v  \n", numOfBoards)
+	boards := initializeBoards(numOfBoards)
+	score := findWinningBoard(randomNums, &input, boards)
 	return score
 }
 
-func findWinningBoard(randomNums []string, input *[][][]Num) int {
+func initializeBoards(numOfBoards int) []Board {
+	boards := make([]Board, numOfBoards)
+	for i := 0; i < numOfBoards; i++ {
+		boards[i] = Board{
+			boardNum: i,
+			won:      false,
+		}
+	}
+	return boards
+}
+
+func findWinningBoard(randomNums []string, input *[][][]Num, boards []Board) int {
 	randomNumsLen := len(randomNums)
 	n := len(*input)
+
 	for i := 0; i < randomNumsLen; i++ {
 		currNum := randomNums[i]
 		// mark curr num
@@ -119,9 +138,10 @@ func convStrToInt(s string) int {
 	return num
 }
 
-func parseInput(fileScanner *bufio.Scanner) [][][]Num {
+func parseInput(fileScanner *bufio.Scanner) ([][][]Num, int) {
 	input := [][][]Num{}
 	currBoard := [][]Num{}
+	numOfBoards := 0
 	for fileScanner.Scan() {
 		currLine := fileScanner.Text()
 		if len(currLine) == 0 && len(currBoard) == 0 {
@@ -130,12 +150,13 @@ func parseInput(fileScanner *bufio.Scanner) [][][]Num {
 		if len(currLine) == 0 {
 			input = append(input, currBoard)
 			currBoard = [][]Num{}
+			numOfBoards++
 			continue
 		}
 		parsedLine := parse(currLine)
 		currBoard = append(currBoard, parsedLine)
 	}
-	return input
+	return input, numOfBoards
 }
 
 func parse(line string) []Num {
