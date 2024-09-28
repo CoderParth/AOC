@@ -1,5 +1,13 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
+
 // --- Day 2: Password Philosophy ---
 // Your flight departs in a few days from the coastal airport; the easiest
 // way down to the coast from here is via toboggan.
@@ -33,4 +41,78 @@ package main
 //
 // How many passwords are valid according to their policies?
 func main() {
+	fileScanner := createFileScanner()
+	totalValids := 0
+	for fileScanner.Scan() {
+		line := parseLine(fileScanner.Text())
+		if isValid(line) {
+			totalValids++
+		}
+	}
+	fmt.Printf("Total Valids: %v \n", totalValids)
+}
+
+func isValid(line []string) bool {
+	minNum, maxNum, givenLetter, password := convStrToInt(line[0]), convStrToInt(line[1]), line[2], line[4]
+	passMap := make(map[string]int)
+	n := len(password)
+	passMap[givenLetter] = 0
+	for i := 0; i < n; i++ {
+		passMap[string(password[i])]++
+	}
+	for currChar, freq := range passMap {
+		if currChar == givenLetter {
+			if freq < minNum || freq > maxNum {
+				return false
+			}
+			break
+		}
+	}
+	return true
+}
+
+func convStrToInt(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func parseLine(line string) []string {
+	arr := []string{}
+	n := len(line)
+	for i := 0; i < n; i++ {
+		if string(line[i]) == " " {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[j]) == "-" || string(line[j]) == " " || string(line[j]) == ":" {
+				arr = append(arr, curr)
+				i = j
+				curr = ""
+				continue
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				arr = append(arr, curr)
+				i = j
+				curr = ""
+				continue
+			}
+			curr += string(line[j])
+		}
+	}
+	return arr
 }
