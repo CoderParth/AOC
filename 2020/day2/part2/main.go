@@ -45,20 +45,12 @@ func main() {
 }
 
 func isValid(line []string) bool {
-	minNum, maxNum, givenLetter, password := convStrToInt(line[0]), convStrToInt(line[1]), line[2], line[4]
-	passMap := make(map[string]int)
-	n := len(password)
-	passMap[givenLetter] = 0
-	for i := 0; i < n; i++ {
-		passMap[string(password[i])]++
+	firstIdx, secondIdx, givenLetter, password := convStrToInt(line[0]), convStrToInt(line[1]), line[2], line[4]
+	if string(password[firstIdx-1]) == givenLetter && string(password[secondIdx-1]) == givenLetter {
+		return false
 	}
-	for currChar, freq := range passMap {
-		if currChar == givenLetter {
-			if freq < minNum || freq > maxNum {
-				return false
-			}
-			break
-		}
+	if string(password[firstIdx-1]) != givenLetter && string(password[secondIdx-1]) != givenLetter {
+		return false
 	}
 	return true
 }
