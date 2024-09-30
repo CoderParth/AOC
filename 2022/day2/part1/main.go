@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // --- Day 2: Rock Paper Scissors ---
 // The Elves begin to set up camp on the beach.
 // To decide whose tent gets to be closest to the
@@ -58,4 +65,41 @@ package main
 // What would your total score be if everything goes exactly
 // according to your strategy guide?
 func main() {
+	guideMap, pointsMap := initialize()
+	fileScanner := createFileScanner()
+	total := 0
+	for fileScanner.Scan() {
+		opponentChoice, yourChoice := parseLine(fileScanner.Text())
+		total += pointsMap[yourChoice] // points for the shape you selected
+		total += matchOutcome(opponentChoice, yourChoice)
+	}
+	fmt.Printf("Total Score: %v \n", total)
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func initialize() (map[string]string, map[string]int) {
+	guideMap := map[string]string{
+		"A": "Rock",
+		"B": "Paper",
+		"C": "Scissor",
+		"X": "Rock",
+		"Y": "Paper",
+		"Z": "Scissor",
+	}
+
+	pointsMap := map[string]int{
+		"Rock":    1,
+		"Paper":   2,
+		"Scissor": 3,
+	}
+	return guideMap, pointsMap
 }
