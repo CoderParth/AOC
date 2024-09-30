@@ -69,11 +69,67 @@ func main() {
 	fileScanner := createFileScanner()
 	total := 0
 	for fileScanner.Scan() {
-		opponentChoice, yourChoice := parseLine(fileScanner.Text())
+		opponentChoice, yourChoice := parseLine(fileScanner.Text(), guideMap)
 		total += pointsMap[yourChoice] // points for the shape you selected
 		total += matchOutcome(opponentChoice, yourChoice)
 	}
 	fmt.Printf("Total Score: %v \n", total)
+}
+
+func parseLine(line string, guideMap map[string]string) (string, string) {
+	n := len(line)
+	arr := []string{}
+	for i := 0; i < n; i++ {
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(line[j]) == " " {
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(line[j])
+				arr = append(arr, curr)
+				i = j
+				break
+			}
+			curr += string(line[j])
+		}
+	}
+	opponentChoice := guideMap[arr[0]]
+	yourChoice := guideMap[arr[1]]
+	return opponentChoice, yourChoice
+}
+
+func matchOutcome(opponentChoice, yourChoice string) int {
+	// opponent chooses rock
+	if opponentChoice == "Rock" {
+		if yourChoice == "Paper" {
+			return 6 // won
+		}
+		if yourChoice == "Scissor" {
+			return 0 // lost
+		}
+	}
+	// opponent chooses paper
+	if opponentChoice == "Paper" {
+		if yourChoice == "Rock" {
+			return 0 // lost
+		}
+		if yourChoice == "Scissor" {
+			return 6 // won
+		}
+	}
+	// opponent chooses scissors
+	if opponentChoice == "Scissor" {
+		if yourChoice == "Rock" {
+			return 6 // won
+		}
+		if yourChoice == "Paper" {
+			return 0 // lost
+		}
+	}
+	return 3 // draw - you chose same as your opponent
 }
 
 func createFileScanner() *bufio.Scanner {
