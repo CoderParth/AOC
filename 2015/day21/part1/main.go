@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // --- Day 21: RPG Simulator 20XX ---
 // Little Henry Case got a new video game for Christmas. It's an RPG,
 // and he's stuck on a boss. He needs to know what equipment to buy
@@ -78,6 +80,10 @@ func main() {
 	weapons := initilaizeWeapons()
 	armor := initializeArmor()
 	rings := initializeRings()
+	player := initializePlayer()
+	boss := initializeBoss()
+	gold := findLeastAmountToWin(weapons, armor, rings, player, boss)
+	fmt.Printf("Least amount of gold: %v \n", gold)
 }
 
 func initilaizeWeapons() [][]int {
@@ -109,4 +115,34 @@ func initializeRings() [][]int {
 	arr = append(arr, []int{40, 0, 2})
 	arr = append(arr, []int{80, 0, 3})
 	return arr
+}
+
+func initializePlayer() *Attacker {
+	p := &Attacker{
+		hitPoints: 100,
+		damage:    0,
+		armor:     0,
+	}
+	return p
+}
+
+func initializeBoss() *Attacker {
+	b := &Attacker{
+		hitPoints: 104,
+		damage:    8,
+		armor:     1,
+	}
+	return b
+}
+
+func findLeastAmountToWin(w, a, r [][]int, p, b *Attacker) int {
+	gold := 0
+	for i := 0; i < len(w); i++ {
+		for j := 0; j < len(a); j++ {
+			for k := 0; k < len(r); k++ {
+			}
+		}
+	}
+	won, currGoldExp := findResultAndExpenditure()
+	return gold
 }

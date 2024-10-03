@@ -55,6 +55,7 @@ import "fmt"
 
 func main() {
 	input := [16]int{4, 10, 4, 1, 8, 4, 9, 14, 5, 1, 14, 15, 0, 15, 3, 5}
+	fmt.Printf("Input: %v \n", input)
 	numOfCycles := findNumOfCycles(&input)
 	fmt.Printf("Num Of cycles: %v \n", numOfCycles)
 }
@@ -103,4 +104,7 @@ func redistribute(input *[16]int, largestNum, idx int) {
 		}
 		(*input)[i] += s
 	}
+	fmt.Printf("Input: %v \n", input)
 }
+
+// divide the largest number into remaining blocks

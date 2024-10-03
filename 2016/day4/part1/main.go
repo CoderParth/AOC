@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // --- Day 4: Security Through Obscurity ---
 // Finally, you come across an information kiosk with a list of rooms.
 // Of course, the list is encrypted and full of decoy data, but the
@@ -25,4 +32,23 @@ package main
 //
 // What is the sum of the sector IDs of the real rooms?
 func main() {
+	sumOfIds := findSumOfSectorIds()
+	fmt.Printf("Sum of sector ids: %v \n", sumOfIds)
+}
+
+func findSumOfSectorIds() int {
+	total := 0
+	fileScanner := createFileScanner()
+	for fileScanner.Scan() {
+	}
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
 }

@@ -47,6 +47,17 @@ func main() {
 	fileScanner := createFileScanner()
 	input := parseInput(fileScanner)
 	fmt.Printf("Input: %v \n", input)
+	output := decompressData(input)
+	fmt.Printf("Output: %v \n", output)
+}
+
+func decompressData(input []string) string {
+	output := ""
+	n := len(input)
+	for i := 0; i < n; i++ {
+		output += input[i]
+	}
+	return output
 }
 
 func createFileScanner() *bufio.Scanner {

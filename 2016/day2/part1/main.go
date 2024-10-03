@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 // --- Day 2: Bathroom Security ---
@@ -78,5 +79,39 @@ func createFileScanner() *bufio.Scanner {
 }
 
 func findCode(keypad [][]int, fileScanner *bufio.Scanner) string {
-	return ""
+	code := ""
+	i, j := 1, 2 // starting idxs
+	for fileScanner.Scan() {
+		currLine := fileScanner.Text()
+		button := findButton(currLine, keypad, &i, &j)
+		code += strconv.Itoa(button)
+
+	}
+	return code
+}
+
+func findButton(line string, keypad [][]int, i, j *int) int {
+	m, n := len(keypad), len(keypad[0])
+	lenOfLine := len(line)
+	for l := 0; l < lenOfLine; l++ {
+		switch string(line[l]) {
+		case "U":
+			if *i > 0 {
+				*i--
+			}
+		case "D":
+			if *i < m-1 {
+				*i++
+			}
+		case "L":
+			if *j > 0 {
+				*j--
+			}
+		case "R":
+			if *j < n-1 {
+				*j++
+			}
+		}
+	}
+	return keypad[*i][*j]
 }
