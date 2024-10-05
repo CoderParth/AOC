@@ -42,7 +42,6 @@ func findValidPasswords(lowRange, highRange int) int {
 		}
 		lowRange++
 	}
-
 	return total
 }
 
@@ -53,13 +52,15 @@ func meetsCriteria(num int) bool {
 	prevNum := convStrToInt(string(s[0]))
 	for i := 1; i < n; i++ {
 		currNum := convStrToInt(string(s[i]))
-		if prevNum < currNum {
-			return false
+		if prevNum > currNum {
+			return false // digit is decreasing
 		}
 		if prevNum == currNum {
 			hasDouble = true
+			prevNum = currNum
 			continue
 		}
+		prevNum = currNum
 	}
 	return hasDouble
 }
