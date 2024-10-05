@@ -1,5 +1,13 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
+
 // --- Day 4: Camp Cleanup ---
 // Space needs to be cleared before the last supplies can be unloaded
 // from the ships, and so several Elves have been assigned the job of
@@ -59,4 +67,68 @@ package main
 //
 // In how many assignment pairs does one range fully contain the other?
 func main() {
+	fileScanner := createFileScanner()
+	totalValidPairs := 0 // assignment pairs where one range fully contains the other
+	for fileScanner.Scan() {
+		inputArr := parseLine(fileScanner.Text())
+		if isValidPair(inputArr) { // if one range fully contains the other
+			totalValidPairs++
+		}
+	}
+	fmt.Printf("Total Valid Pairs: %v \n", totalValidPairs)
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func isValidPair(inputArr []int) bool {
+	firstSecMin, firstSecMax := inputArr[0], inputArr[1]
+	secondSecMin, secondSecMax := inputArr[2], inputArr[3]
+	if firstSecMin <= secondSecMin && firstSecMax >= secondSecMax {
+		return true
+	}
+	if secondSecMin <= firstSecMin && secondSecMax >= firstSecMax {
+		return true
+	}
+	return false
+}
+
+func parseLine(input string) []int {
+	inputArr := []int{}
+	n := len(input)
+	for i := 0; i < n; i++ {
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(input[j]) == "-" || string(input[j]) == "," {
+				num := convStrToInt(curr)
+				inputArr = append(inputArr, num)
+				i = j
+				break
+			}
+			if j == n-1 {
+				curr += string(input[j])
+				num := convStrToInt(curr)
+				inputArr = append(inputArr, num)
+				i = j
+				break
+			}
+			curr += string(input[j])
+		}
+	}
+	return inputArr
+}
+
+func convStrToInt(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
 }
