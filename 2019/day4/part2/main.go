@@ -43,21 +43,33 @@ func findValidPasswords(lowRange, highRange int) int {
 func meetsCriteria(num int) bool {
 	s := strconv.Itoa(num)
 	n := len(s)
-	hasDouble := false
-	prevNum := convStrToInt(string(s[0]))
+	// prevNum := convStrToInt(string(s[0]))
+	prevNum := s[0]
+
+	// Check if the digits are decreasing
 	for i := 1; i < n; i++ {
-		currNum := convStrToInt(string(s[i]))
+		currNum := s[i]
 		if prevNum > currNum {
 			return false // digit is decreasing
 		}
-		if prevNum == currNum {
-			hasDouble = true
-			prevNum = currNum
-			continue
-		}
 		prevNum = currNum
 	}
-	return hasDouble
+
+	if s[0] == s[1] && s[0] != s[2] {
+		return true
+	}
+
+	if s[n-1] == s[n-2] && s[n-1] != s[n-3] {
+		return true
+	}
+
+	for i := 1; i < n-2; i++ {
+		if s[i] == s[i+1] && s[i] != s[i+2] && s[i] != s[i-1] {
+			return true
+		}
+	}
+
+	return false
 }
 
 func convStrToInt(s string) int {
