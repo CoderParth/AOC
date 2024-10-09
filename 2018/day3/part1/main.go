@@ -1,5 +1,13 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
+
 // --- Day 3: No Matter How You Slice It ---
 // The Elves managed to locate the chimney-squeeze prototype fabric for
 // Santa's suit (thanks to someone who helpfully wrote its box IDs on the
@@ -61,4 +69,114 @@ package main
 // enough fabric. How many square inches of fabric are within two or more claims?
 
 func main() {
+	fileScanner := createFileScanner()
+	fabric := initializeFabric()
+	// fmt.Printf("Fabric: %v \n", fabric)
+	for fileScanner.Scan() {
+		inputArr := parseInput(fileScanner.Text())
+		claimTheArea(&fabric, inputArr)
+	}
+}
+
+func claimTheArea(fabric *[][]string, inputArr []string) {
+	fmt.Printf("Input arr: %v \n", inputArr)
+	leftEdge, topEdge := convStrToInt(inputArr[1]), convStrToInt(inputArr[2])
+	width, height := convStrToInt(inputArr[2]), convStrToInt(inputArr[3])
+	fmt.Printf("%v %v %v %v \n", leftEdge, topEdge, width, height)
+}
+
+func convStrToInt(s string) int {
+	num, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
+}
+
+func parseInput(line string) []string {
+	arr := []string{}
+	n := len(line)
+	i := 1
+
+	// Parse claim Id
+	claimId := ""
+	for {
+		if string(line[i]) == " " {
+			i += 3
+			break
+		}
+		claimId += string(line[i])
+		i++
+	}
+	arr = append(arr, claimId)
+
+	// parse left edge
+	leftEdge := ""
+	for {
+		if string(line[i]) == "," {
+			i++
+			break
+		}
+		leftEdge += string(line[i])
+		i++
+	}
+	arr = append(arr, leftEdge)
+
+	// parse top edge
+	topEdge := ""
+	for {
+		if string(line[i]) == ":" {
+			i += 2
+			break
+		}
+		topEdge += string(line[i])
+		i++
+	}
+	arr = append(arr, topEdge)
+
+	// parse width
+	width := ""
+	for {
+		if string(line[i]) == "x" {
+			i++
+			break
+		}
+		width += string(line[i])
+		i++
+	}
+	arr = append(arr, width)
+
+	// parse height
+	height := ""
+	for {
+		if i == n-1 {
+			height += string(line[i])
+			break
+		}
+		height += string(line[i])
+		i++
+	}
+	arr = append(arr, height)
+	return arr
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func initializeFabric() [][]string {
+	fabric := make([][]string, 1000)
+	for i := 0; i < 1000; i++ {
+		fabric[i] = make([]string, 1000)
+		for j := 0; j < 1000; j++ {
+			fabric[i][j] = "."
+		}
+	}
+	return fabric
 }
