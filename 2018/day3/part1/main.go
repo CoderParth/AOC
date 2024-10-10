@@ -71,18 +71,38 @@ import (
 func main() {
 	fileScanner := createFileScanner()
 	fabric := initializeFabric()
-	// fmt.Printf("Fabric: %v \n", fabric)
 	for fileScanner.Scan() {
 		inputArr := parseInput(fileScanner.Text())
 		claimTheArea(&fabric, inputArr)
 	}
+	totalSquareInches := calculateSquareInches(fabric)
+	fmt.Printf("Total square inches: %v \n", totalSquareInches)
+}
+
+func calculateSquareInches(fabric [][]string) int {
+	total := 0
+	for i := 0; i < 1000; i++ {
+		for j := 0; j < 1000; j++ {
+			if fabric[i][j] == "X" {
+				total++
+			}
+		}
+	}
+	return total
 }
 
 func claimTheArea(fabric *[][]string, inputArr []string) {
-	fmt.Printf("Input arr: %v \n", inputArr)
 	leftEdge, topEdge := convStrToInt(inputArr[1]), convStrToInt(inputArr[2])
-	width, height := convStrToInt(inputArr[2]), convStrToInt(inputArr[3])
-	fmt.Printf("%v %v %v %v \n", leftEdge, topEdge, width, height)
+	width, height := convStrToInt(inputArr[3]), convStrToInt(inputArr[4])
+	for i := topEdge; i < topEdge+height; i++ {
+		for j := leftEdge; j < leftEdge+width; j++ {
+			if (*fabric)[i][j] != "." {
+				(*fabric)[i][j] = "X"
+				continue
+			}
+			(*fabric)[i][j] = inputArr[0]
+		}
+	}
 }
 
 func convStrToInt(s string) int {
