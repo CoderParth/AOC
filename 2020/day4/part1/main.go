@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 // --- Day 4: Passport Processing ---
 // You arrive at the airport only to realize that you grabbed your North
 // Pole Credentials instead of your passport. While these documents are
@@ -62,4 +69,46 @@ package main
 // Count the number of valid passports - those that have all required fields.
 // Treat cid as optional. In your batch file, how many passports are valid?
 func main() {
+	fileScanner := createFileScanner()
+	requireFields := initializeRequiredFiels()
+	passportData := ""
+	totalValids := 0
+	for fileScanner.Scan() {
+		currText := fileScanner.Text()
+		if len(currText) == 0 {
+			if isValid(requireFields, passportData) {
+				totalValids++
+			}
+			passportData = ""
+		}
+		passportData += currText + " "
+	}
+	fmt.Printf("Total Valids: %v \n", totalValids)
+}
+
+func isValid(requireFields map[string]int, passportData string) bool {
+}
+
+func createFileScanner() *bufio.Scanner {
+	readFile, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	return fileScanner
+}
+
+func initializeRequiredFiels() map[string]int {
+	requiredFieldsMap := map[string]int{
+		"byr": 0,
+		"iyr": 0,
+		"eyr": 0,
+		"hgt": 0,
+		"hcl": 0,
+		"ecl": 0,
+		"pid": 0,
+		"cid": 0,
+	}
+	return requiredFieldsMap
 }
