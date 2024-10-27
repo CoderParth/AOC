@@ -31,15 +31,75 @@ import (
 // what would your total score be if everything goes exactly
 // according to your strategy guide?
 func main() {
-	guideMap, pointsMap := initialize()
+	guideMap := initialize()
 	fileScanner := createFileScanner()
 	total := 0
 	for fileScanner.Scan() {
-		opponentChoice, yourChoice := parseLine(fileScanner.Text(), guideMap)
-		total += pointsMap[yourChoice] // points for the shape you selected
-		total += matchOutcome(opponentChoice, yourChoice)
+		opponentChoice, wayRoundNeedstoEnd := parseLine(fileScanner.Text(), guideMap)
+		total += matchOutcome(opponentChoice, wayRoundNeedstoEnd)
 	}
 	fmt.Printf("Total Score: %v \n", total)
+}
+
+func matchOutcome(opponentChoice, wayRoundNeedstoEnd string) int {
+	// opponent chooses rock
+	if opponentChoice == "Rock" {
+		if wayRoundNeedstoEnd == "Draw" {
+			// Choose rock , get 1 point
+			// Get 3 points for draw
+			return 4 // 1 + 3
+		}
+		if wayRoundNeedstoEnd == "Lose" {
+			// Choose Scissors, get 3 points
+			// No points for Losing - 0
+			return 3 // 0 + 3
+		}
+		if wayRoundNeedstoEnd == "Win" {
+			// Choose Paper, Get 2 points
+			// Get 6 points fo winning
+			return 8
+		}
+	}
+
+	// opponent chooses Scissors
+	if opponentChoice == "Scissors" {
+		if wayRoundNeedstoEnd == "Draw" {
+			// Choose Scissors, get 3 points
+			// Get 3 points for draw
+			return 6 // 3 + 3
+		}
+		if wayRoundNeedstoEnd == "Lose" {
+			// Choose Paper, get 2 points
+			// Get 0 points for loss
+			return 2 // 0 + 2
+		}
+		if wayRoundNeedstoEnd == "Win" {
+			// Choose Rock, get 1 point
+			// Get 6 points for a win
+			return 7 // 6 + 1
+		}
+	}
+
+	// opponent chooses Paper
+	if opponentChoice == "Paper" {
+		if wayRoundNeedstoEnd == "Draw" {
+			// Choose Paper, Get 2 points
+			// Get 3 points for draw
+			return 5 // 2 + 3
+		}
+		if wayRoundNeedstoEnd == "Lose" {
+			// Choose Rock, get 1 point
+			// Get 0 points for loss
+			return 1 // 0 + 1
+		}
+		if wayRoundNeedstoEnd == "Win" {
+			// Choose Scissors, get 3 points
+			// Get 6 points for a win
+			return 9 // 6 + 3
+		}
+	}
+
+	return 0
 }
 
 func parseLine(line string, guideMap map[string]string) (string, string) {
@@ -67,37 +127,6 @@ func parseLine(line string, guideMap map[string]string) (string, string) {
 	return opponentChoice, yourChoice
 }
 
-func matchOutcome(opponentChoice, yourChoice string) int {
-	// opponent chooses rock
-	if opponentChoice == "Rock" {
-		if yourChoice == "Paper" {
-			return 6 // won
-		}
-		if yourChoice == "Scissor" {
-			return 0 // lost
-		}
-	}
-	// opponent chooses paper
-	if opponentChoice == "Paper" {
-		if yourChoice == "Rock" {
-			return 0 // lost
-		}
-		if yourChoice == "Scissor" {
-			return 6 // won
-		}
-	}
-	// opponent chooses scissors
-	if opponentChoice == "Scissor" {
-		if yourChoice == "Rock" {
-			return 6 // won
-		}
-		if yourChoice == "Paper" {
-			return 0 // lost
-		}
-	}
-	return 3 // draw - you chose same as your opponent
-}
-
 func createFileScanner() *bufio.Scanner {
 	readFile, err := os.Open("input.txt")
 	if err != nil {
@@ -108,20 +137,14 @@ func createFileScanner() *bufio.Scanner {
 	return fileScanner
 }
 
-func initialize() (map[string]string, map[string]int) {
+func initialize() map[string]string {
 	guideMap := map[string]string{
 		"A": "Rock",
 		"B": "Paper",
-		"C": "Scissor",
-		"X": "Rock",
-		"Y": "Paper",
-		"Z": "Scissor",
+		"C": "Scissors",
+		"X": "Lose",
+		"Y": "Draw",
+		"Z": "Win",
 	}
-
-	pointsMap := map[string]int{
-		"Rock":    1,
-		"Paper":   2,
-		"Scissor": 3,
-	}
-	return guideMap, pointsMap
+	return guideMap
 }
