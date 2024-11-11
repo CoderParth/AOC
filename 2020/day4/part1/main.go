@@ -76,7 +76,10 @@ func main() {
 	for fileScanner.Scan() {
 		currText := fileScanner.Text()
 		if len(currText) == 0 {
-			if isValid(requireFields, passportData) {
+			fmt.Printf("Passport Data: %v \n", passportData)
+			passportMap := createMap(passportData) // Creates a hashmap out of the key of the passport fields.
+			fmt.Printf("Passport Map: %v \n", passportMap)
+			if isValid(requireFields, passportMap) {
 				totalValids++
 			}
 			passportData = ""
@@ -86,7 +89,42 @@ func main() {
 	fmt.Printf("Total Valids: %v \n", totalValids)
 }
 
-func isValid(requireFields map[string]int, passportData string) bool {
+func createMap(passportData string) map[string]int {
+	n := len(passportData)
+	mp := make(map[string]int)
+	for i := 0; i < n; i++ {
+		if string(passportData[i]) == " " {
+			continue
+		}
+		curr := ""
+		for j := i; j < n; j++ {
+			if string(passportData[j]) == ":" {
+				mp[curr] = 0
+				i = j
+				break
+			}
+			if string(passportData[j]) == " " {
+				i = j
+				break
+			}
+			if j == n-1 {
+				i = j
+				break
+			}
+			curr += string(passportData[j])
+		}
+	}
+	return mp
+}
+
+func isValid(requiredFields map[string]int, passportMap map[string]int) bool {
+	for field := range requiredFields {
+		_, ok := passportMap[field]
+		if !ok {
+			return false
+		}
+	}
+	return true
 }
 
 func createFileScanner() *bufio.Scanner {
@@ -108,7 +146,7 @@ func initializeRequiredFiels() map[string]int {
 		"hcl": 0,
 		"ecl": 0,
 		"pid": 0,
-		"cid": 0,
+		// "cid": 0, // **Ignore cid field
 	}
 	return requiredFieldsMap
 }
