@@ -33,7 +33,7 @@ import (
 // your batch file, how many passports are valid?
 func main() {
 	fileScanner := createFileScanner()
-	requireFields := initializeRequiredFiels()
+	// requireFields := initializeRequiredFiels()
 	passportData := ""
 	totalValids := 0
 	for fileScanner.Scan() {
@@ -42,9 +42,9 @@ func main() {
 			fmt.Printf("Passport Data: %v \n", passportData)
 			passportMap := createMap(passportData) // Creates a hashmap out of the key of the passport fields.
 			fmt.Printf("Passport Map: %v \n", passportMap)
-			if isValid(requireFields, passportMap) {
-				totalValids++
-			}
+			// if isValid(requireFields, passportMap) {
+			// 	totalValids++
+			// }
 			passportData = ""
 		}
 		passportData += currText + " "
@@ -52,29 +52,34 @@ func main() {
 	fmt.Printf("Total Valids: %v \n", totalValids)
 }
 
-func createMap(passportData string) map[string]int {
+func createMap(passportData string) map[string]string {
 	n := len(passportData)
-	mp := make(map[string]int)
+	mp := make(map[string]string)
 	for i := 0; i < n; i++ {
 		if string(passportData[i]) == " " {
 			continue
 		}
-		curr := ""
+		field, isFieldParsed := "", false
+		value, readyToParseValue := "", false
 		for j := i; j < n; j++ {
 			if string(passportData[j]) == ":" {
-				mp[curr] = 0
+				mp[field] = ""
+				isFieldParsed = true
+				readyToParseValue = true
 				i = j
 				break
 			}
 			if string(passportData[j]) == " " {
+				mp[field] = value
 				i = j
 				break
 			}
-			if j == n-1 {
-				i = j
-				break
+			if !isFieldParsed {
+				field += string(passportData[j])
 			}
-			curr += string(passportData[j])
+			if readyToParseValue {
+				value += string(passportData[j])
+			}
 		}
 	}
 	return mp
